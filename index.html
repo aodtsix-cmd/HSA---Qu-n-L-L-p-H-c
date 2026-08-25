@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSA EDUCATION – Cổng thông tin lớp học</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+
+  /* ============================================================
+     1. TOKEN HỆ THỐNG (màu / font) — không cần sửa
+     ============================================================ */
+  :root{
+    --green-900:#0d3d27;
+    --green-800:#124a30;
+    --green-700:#186b45;
+    --green-600:#1f8a5c;
+    --green-500:#2aa36e;
+    --green-100:#e8f5ee;
+    --green-050:#f5faf7;
+    --orange:#f2994a;
+    --orange-dark:#dd7a2a;
+    --ink:#152420;
+    --ink-soft:#5b6b62;
+    --paper:#ffffff;
+    --border:#dfe9e2;
+    --shadow-sm: 0 2px 8px rgba(13,61,39,.06);
+    --shadow-md: 0 10px 28px rgba(13,61,39,.10);
+    --radius-lg:20px;
+    --radius-md:14px;
+    --radius-sm:10px;
+
+    /* màu mục Xử lý sự cố — có thể dùng lại cho mục mới */
+    --c-xanh_duong:#2f6fed;
+    --c-cam:#f2994a;
+    --c-xanh_la:#1f8a5c;
+    --c-do:#c0392b;
+    --c-tim:#7c4dbd;
+    --c-xanh_ngoc:#17a398;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    color:var(--ink);
+    background:var(--paper);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Be Vietnam Pro','Inter',system-ui,sans-serif;
+    font-weight:800;
+    letter-spacing:-0.01em;
+    margin:0;
+  }
+  a{color:inherit;}
+  img{max-width:100%;display:block;}
+  button{font-family:inherit;cursor:pointer;}
+
+  .wrap{max-width:1120px;margin:0 auto;padding:0 20px;}
+  .section{padding:56px 0;}
+  .section-head{text-align:center;max-width:640px;margin:0 auto 32px;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:13px;font-weight:700;color:var(--green-700);
+    background:var(--green-100);border:1px solid var(--green-500);
+    padding:6px 14px;border-radius:999px;margin-bottom:14px;
+  }
+  .section-title{font-size:clamp(22px,3.4vw,30px);color:var(--green-900);}
+  .section-sub{color:var(--ink-soft);font-size:15px;margin-top:8px;line-height:1.55;}
+
+  /* ============================================================
+     2. TOP BAR + HEADER
+     ============================================================ */
+  .topbar{background:var(--green-900);color:#fff;font-size:13px;padding:9px 0;}
+  .topbar .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
+  .topbar a{color:#fff;text-decoration:none;display:flex;align-items:center;gap:6px;font-weight:600;}
+  .topbar .brand-label{opacity:.8;}
+
+  header.masthead{display:flex;align-items:center;gap:14px;padding:16px 0;border-bottom:1px solid var(--border);}
+  .logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+  .logo-mark{width:42px;height:42px;flex-shrink:0;}
+  .logo-word{font-family:'Be Vietnam Pro';font-weight:800;font-size:19px;color:var(--green-900);line-height:1;}
+  .logo-word span{color:var(--orange);}
+  .logo-sub{font-size:11px;color:var(--ink-soft);margin-top:2px;letter-spacing:.02em;}
+
+  /* ============================================================
+     3. HERO
+     ============================================================ */
+  .hero{
+    background:radial-gradient(120% 140% at 15% 0%, #eef8f1 0%, var(--green-050) 45%, #ffffff 100%);
+    padding:52px 0 44px;border-bottom:1px solid var(--border);
+  }
+  .hero-inner{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center;}
+  .hero-title{font-size:clamp(28px,4.2vw,44px);line-height:1.12;color:var(--green-900);}
+  .hero-title .accent{
+    background:linear-gradient(90deg,var(--orange) 0%,var(--green-600) 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero-desc{margin-top:16px;font-size:15.5px;color:var(--ink-soft);line-height:1.65;max-width:520px;}
+  .hero-stats{display:flex;gap:28px;margin-top:26px;flex-wrap:wrap;}
+  .hero-stat b{display:block;font-size:24px;color:var(--green-700);font-family:'Be Vietnam Pro';font-weight:800;}
+  .hero-stat span{font-size:12.5px;color:var(--ink-soft);}
+  .hero-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px;box-shadow:var(--shadow-md);}
+  .hero-card h3{font-size:16px;color:var(--green-900);margin-bottom:4px;}
+  .hero-card p{margin:0 0 16px;color:var(--ink-soft);font-size:13.5px;}
+  .hero-card-list{display:flex;flex-direction:column;gap:10px;}
+  .hero-card-row{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:12px 14px;border-radius:var(--radius-sm);background:var(--green-050);
+    border:1px solid var(--border);font-size:13.5px;text-decoration:none;color:inherit;
+  }
+  .hero-card-row b{color:var(--green-900);font-weight:600;}
+  .pill{font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--green-600);color:#fff;}
+  .pill.orange{background:var(--orange);}
+  .pill.muted{background:#eef1ee;color:var(--ink-soft);}
+
+  /* ============================================================
+     4. BUTTONS
+     ============================================================ */
+  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px;padding:12px 20px;border-radius:var(--radius-sm);border:1px solid transparent;text-decoration:none;transition:transform .15s ease;}
+  .btn:hover{transform:translateY(-1px);}
+  .btn-primary{background:var(--green-700);color:#fff;box-shadow:var(--shadow-sm);}
+  .btn-outline{background:#fff;color:var(--green-700);border-color:var(--green-600);}
+
+  /* ============================================================
+     5. CARD CHUNG
+     ============================================================ */
+  .card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);}
+  .card-pad{padding:26px;}
+
+  /* ============================================================
+     6. VIDEO
+     ============================================================ */
+  .video-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+  .video-card{overflow:hidden;}
+  .video-frame{aspect-ratio:16/9;background:var(--ink);}
+  .video-frame iframe{width:100%;height:100%;border:0;}
+  .video-body{padding:16px 18px 18px;}
+  .video-body h4{font-size:14.5px;margin:0 0 4px;color:var(--green-900);}
+  .video-body p{margin:0;font-size:12.5px;color:var(--ink-soft);}
+
+  /* ============================================================
+     7. TÀI LIỆU / LINK ROW DÙNG CHUNG
+     ============================================================ */
+  .doc-list{display:flex;flex-direction:column;gap:12px;}
+  .doc-row{display:flex;align-items:center;gap:14px;padding:16px 18px;text-decoration:none;color:inherit;}
+  .doc-icon{width:42px;height:42px;border-radius:12px;background:var(--green-100);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--green-700);font-size:18px;}
+  .doc-text h4{font-size:14.5px;margin:0 0 2px;color:var(--ink);}
+  .doc-text p{margin:0;font-size:12.5px;color:var(--ink-soft);}
+  .doc-arrow{margin-left:auto;color:var(--green-600);font-size:18px;}
+
+  /* ============================================================
+     8. XỬ LÝ SỰ CỐ (FAQ / sổ tay)
+     ============================================================ */
+  .faq-jump{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:28px;}
+  .faq-jump a{
+    font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:999px;
+    background:#fff;border:1px solid var(--border);text-decoration:none;color:var(--ink-soft);
+  }
+  .faq-list{display:flex;flex-direction:column;gap:18px;}
+  .faq-card{border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-sm);scroll-margin-top:20px;}
+  .faq-head{display:flex;align-items:center;gap:12px;padding:14px 20px;color:#fff;}
+  .faq-num{width:26px;height:26px;border-radius:8px;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;}
+  .faq-head h4{font-size:15px;letter-spacing:.02em;}
+  .faq-body{padding:18px 22px 22px;display:flex;flex-direction:column;gap:8px;background:#fff;}
+  .faq-step{font-weight:700;font-size:13.5px;color:var(--ink);margin-top:8px;}
+  .faq-step:first-child{margin-top:0;}
+  .faq-link{
+    display:flex;align-items:center;gap:8px;font-size:13.5px;padding:9px 12px;border-radius:var(--radius-sm);
+    background:var(--green-050);text-decoration:none;color:var(--green-800);border:1px solid var(--border);width:fit-content;max-width:100%;
+  }
+  .faq-link.disabled{color:var(--ink-soft);background:#f4f4f2;pointer-events:none;}
+  .faq-note{
+    margin-top:8px;padding:12px 14px;border-radius:var(--radius-sm);background:#fff8ec;
+    border:1px solid #f0dfb8;font-size:13px;color:#7a5b12;line-height:1.55;
+  }
+
+  /* ============================================================
+     9. ĐỘI NGŨ HỖ TRỢ
+     ============================================================ */
+  .team-filter{display:flex;justify-content:center;gap:10px;margin-bottom:22px;}
+  .filter-btn{padding:9px 20px;border-radius:999px;border:1px solid var(--border);background:#fff;font-size:13.5px;font-weight:600;color:var(--ink-soft);}
+  .filter-btn.active{background:var(--green-700);border-color:var(--green-700);color:#fff;}
+  .team-scroll{display:flex;gap:16px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x proximity;}
+  .team-card{min-width:220px;scroll-snap-align:start;text-align:center;padding:24px 18px;flex-shrink:0;}
+  .team-avatar{width:56px;height:56px;border-radius:50%;background:var(--green-100);color:var(--green-700);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;margin:0 auto 12px;}
+  .team-role{font-size:11.5px;font-weight:700;color:var(--orange-dark);text-transform:uppercase;letter-spacing:.03em;}
+  .team-name{font-size:15.5px;font-weight:700;color:var(--green-900);margin:4px 0 2px;}
+  .team-sub{font-size:12px;color:var(--ink-soft);margin-bottom:14px;}
+  .team-phone{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;background:var(--green-050);border:1px solid var(--border);padding:8px 12px;border-radius:999px;}
+  .scroll-hint{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:6px;}
+
+  /* ============================================================
+     10. CHỌN LỚP
+     ============================================================ */
+  .class-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
+  .class-pick{text-align:left;padding:20px;border-radius:var(--radius-md);border:2px solid var(--border);background:#fff;position:relative;transition:border-color .15s;}
+  .class-pick:hover{border-color:var(--green-500);}
+  .class-pick.selected{border-color:var(--green-700);background:var(--green-050);}
+  .class-pick .check{position:absolute;top:-9px;right:14px;width:24px;height:24px;border-radius:50%;background:var(--green-700);color:#fff;display:none;align-items:center;justify-content:center;font-size:13px;}
+  .class-pick.selected .check{display:flex;}
+  .class-pick h4{font-size:17px;color:var(--green-900);margin:0 0 4px;}
+  .class-pick p{margin:0;font-size:12.5px;color:var(--ink-soft);}
+  .class-pick .status{margin-top:10px;}
+
+  /* ============================================================
+     11. TKB — DẠNG LƯỚI (Ca × Thứ)
+     ============================================================ */
+  .tkb-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
+  .tkb-head h3{font-size:18px;color:var(--green-900);}
+  .tkb-scroll{overflow-x:auto;}
+  table.tkb{border-collapse:collapse;width:100%;min-width:760px;font-size:13px;}
+  table.tkb th,table.tkb td{border:1px solid var(--border);padding:10px;text-align:center;vertical-align:top;}
+  table.tkb thead th{background:var(--green-050);color:var(--green-900);font-weight:700;font-size:12.5px;}
+  table.tkb th.ca-col,table.tkb td.ca-col{background:#fbfdfc;font-weight:700;color:var(--green-700);white-space:nowrap;text-align:left;}
+  table.tkb td.ca-col .ca-sub{display:block;font-weight:500;color:var(--ink-soft);font-size:11px;margin-top:2px;}
+  table.tkb th.today{background:var(--orange);color:#fff;}
+  table.tkb td.today-col{background:#fff6ee;}
+  .today-tag{display:block;font-size:10px;font-weight:700;margin-top:2px;}
+  .slot{background:var(--green-100);border-radius:8px;padding:6px 4px;font-size:12px;line-height:1.4;}
+  .slot b{display:block;color:var(--green-800);font-size:12.5px;}
+  .slot span{color:var(--ink-soft);font-size:11px;}
+  .empty-cell{color:#c3cdc7;}
+  .tkb-empty{text-align:center;padding:30px 16px;color:var(--ink-soft);font-size:14px;background:var(--green-050);border-radius:var(--radius-md);border:1px dashed var(--border);}
+
+  /* Link riêng theo lớp, gộp theo nhóm */
+  .link-groups{margin-top:24px;display:flex;flex-direction:column;gap:18px;}
+  .link-group-title{font-size:12.5px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;}
+  .link-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;}
+  .link-card{display:flex;align-items:center;gap:12px;padding:14px 16px;text-decoration:none;color:inherit;}
+  .link-card .doc-icon{background:var(--green-700);color:#fff;font-size:16px;width:38px;height:38px;}
+  .link-card.disabled{opacity:.55;pointer-events:none;}
+  .link-card.disabled .doc-icon{background:#c8d2cc;}
+
+  /* ============================================================
+     12. FOOTER
+     ============================================================ */
+  footer{background:var(--green-900);color:#cfe4d7;padding:34px 0;margin-top:20px;}
+  footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;}
+  footer .foot-brand{color:#fff;font-family:'Be Vietnam Pro';font-weight:800;font-size:16px;}
+  footer .foot-sub{font-size:12.5px;margin-top:4px;color:#9dbdac;}
+  footer .foot-links{display:flex;gap:18px;font-size:13px;}
+  footer a{text-decoration:none;color:#cfe4d7;}
+  footer a:hover{color:#fff;}
+
+  .sync-note{display:flex;align-items:center;gap:8px;justify-content:center;margin-top:10px;font-size:12px;color:var(--ink-soft);}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--green-600);flex-shrink:0;}
+  .dot.err{background:#d9534f;}
+
+  /* ============================================================
+     12b. NHÂN SỰ VẬN HÀNH (thẻ có mô tả nhiệm vụ)
+     ============================================================ */
+  .staff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;}
+  .staff-card{padding:20px;display:flex;flex-direction:column;gap:12px;}
+  .staff-top{display:flex;align-items:flex-start;gap:12px;}
+  .staff-avatar{
+    width:46px;height:46px;border-radius:14px;background:var(--green-700);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0;
+  }
+  .staff-role{font-size:11px;font-weight:800;color:var(--orange-dark);text-transform:uppercase;letter-spacing:.04em;}
+  .staff-name{font-size:16.5px;font-weight:800;color:var(--green-900);font-family:'Be Vietnam Pro';margin-top:2px;}
+  .staff-tag{
+    display:inline-block;margin-top:6px;font-size:11px;font-weight:700;padding:3px 9px;
+    border-radius:999px;background:var(--green-100);color:var(--green-800);
+  }
+  .staff-duties{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;}
+  .staff-duties li{
+    font-size:13px;color:var(--ink-soft);line-height:1.5;padding-left:16px;position:relative;
+  }
+  .staff-duties li:before{
+    content:"";position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:var(--green-500);
+  }
+  .staff-actions{display:flex;gap:8px;margin-top:auto;padding-top:4px;flex-wrap:wrap;}
+  .staff-btn{
+    display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;
+    padding:9px 14px;border-radius:999px;text-decoration:none;border:1px solid var(--border);
+    background:var(--green-050);color:var(--green-800);
+  }
+  .staff-btn.primary{background:var(--green-700);color:#fff;border-color:var(--green-700);}
+
+  /* ============================================================
+     12c. QUY TẮC HỌC TẬP
+     ============================================================ */
+  .rule-card{overflow:hidden;}
+  .rule-head{padding:16px 22px;background:var(--green-700);color:#fff;}
+  .rule-head h3{font-size:16px;letter-spacing:.02em;}
+  .rule-head p{margin:4px 0 0;font-size:13px;opacity:.9;}
+  .rule-body{padding:20px 22px 22px;display:flex;flex-direction:column;gap:10px;}
+  .rule-item{display:flex;gap:10px;font-size:14px;line-height:1.55;color:var(--ink);}
+  .rule-item .rule-dot{color:var(--green-600);font-weight:800;flex-shrink:0;}
+  .rule-steps{
+    margin-top:6px;border:1px solid #f0dfb8;background:#fff8ec;border-radius:var(--radius-md);padding:14px 16px;
+    display:flex;flex-direction:column;gap:8px;
+  }
+  .rule-steps .rule-steps-title{font-size:12px;font-weight:800;color:#9a6b12;text-transform:uppercase;letter-spacing:.04em;}
+  .rule-step{display:flex;align-items:center;gap:10px;font-size:13.5px;color:#7a5b12;}
+  .rule-step b{
+    width:22px;height:22px;border-radius:7px;background:var(--orange);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;
+  }
+  .rule-highlight{
+    margin-top:8px;padding:14px 18px;border-radius:var(--radius-md);
+    background:linear-gradient(90deg,var(--orange) 0%,var(--orange-dark) 100%);
+    color:#fff;font-weight:700;font-size:14px;line-height:1.5;text-align:center;
+  }
+
+  /* ============================================================
+     12d. HỆ THỐNG BÁO LỖI / GỬI YÊU CẦU
+     ============================================================ */
+  .form-toolbar{display:flex;flex-direction:column;gap:14px;margin-bottom:24px;}
+  .form-search{
+    width:100%;padding:14px 18px;border-radius:999px;border:1px solid var(--border);
+    font-size:14.5px;font-family:inherit;background:#fff;color:var(--ink);
+  }
+  .form-search:focus{outline:none;border-color:var(--green-500);box-shadow:0 0 0 3px rgba(42,163,110,.12);}
+  .form-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+  .form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+  .issue-card{padding:18px 20px;display:flex;flex-direction:column;gap:10px;}
+  .issue-top{display:flex;align-items:flex-start;gap:12px;}
+  .issue-icon{
+    width:40px;height:40px;border-radius:12px;background:var(--green-100);color:var(--green-700);
+    display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;
+  }
+  .issue-title{font-size:15px;font-weight:800;color:var(--green-900);line-height:1.35;}
+  .issue-cat{font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-bottom:3px;}
+  .issue-desc{font-size:13px;color:var(--ink-soft);line-height:1.55;}
+  .issue-meta{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ink-soft);}
+  .issue-meta span b{color:var(--green-800);font-weight:700;}
+  .issue-actions{display:flex;gap:8px;margin-top:auto;padding-top:6px;flex-wrap:wrap;}
+  .issue-btn{
+    display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;
+    padding:9px 14px;border-radius:var(--radius-sm);text-decoration:none;
+    background:var(--green-700);color:#fff;border:1px solid var(--green-700);
+  }
+  .issue-btn.ghost{background:#fff;color:var(--green-700);}
+  .issue-btn.disabled{background:#eef1ee;color:var(--ink-soft);border-color:var(--border);pointer-events:none;}
+  .form-empty{grid-column:1/-1;}
+
+  /* ============================================================
+     12e. HƯỚNG DẪN 3 BƯỚC (chỉ đường cho học sinh)
+     ============================================================ */
+  .flow-wrap{
+    background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);
+    padding:26px 24px;box-shadow:var(--shadow-sm);
+  }
+  .flow-title{text-align:center;font-size:17px;font-weight:800;color:var(--green-900);font-family:'Be Vietnam Pro';}
+  .flow-sub{text-align:center;font-size:13.5px;color:var(--ink-soft);margin:6px 0 20px;}
+  .flow-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .flow-step{
+    display:flex;flex-direction:column;gap:8px;padding:18px;border-radius:var(--radius-md);
+    background:var(--green-050);border:1px solid var(--border);text-decoration:none;color:inherit;
+    transition:border-color .15s, transform .15s;
+  }
+  .flow-step:hover{border-color:var(--green-500);transform:translateY(-2px);}
+  .flow-num{
+    width:28px;height:28px;border-radius:9px;background:var(--green-700);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;
+  }
+  .flow-step.b2 .flow-num{background:var(--orange);}
+  .flow-step.b3 .flow-num{background:var(--green-900);}
+  .flow-step h4{font-size:15px;color:var(--green-900);margin:0;}
+  .flow-step p{margin:0;font-size:13px;color:var(--ink-soft);line-height:1.55;}
+  .flow-step .flow-go{margin-top:auto;padding-top:6px;font-size:12.5px;font-weight:700;color:var(--green-700);}
+  @media (max-width:760px){ .flow-grid{grid-template-columns:1fr;} }
+
+  /* ============================================================
+     12f. MÀN CHỌN KHÓA HỌC (nhiều khóa dùng chung 1 trang)
+     ============================================================ */
+  #pickerScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px 20px;
+    background:radial-gradient(120% 140% at 50% 0%, #f5faf7 0%, #eef3f0 60%, #ffffff 100%);}
+  .picker-box{max-width:760px;width:100%;text-align:center;}
+  .picker-logo{width:56px;height:56px;margin:0 auto 18px;}
+  .picker-box h1{font-size:clamp(22px,3.6vw,30px);color:var(--ink);margin-bottom:8px;}
+  .picker-box .picker-sub{color:var(--ink-soft);font-size:15px;margin-bottom:32px;}
+  .picker-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .picker-card{
+    background:#fff;border:2px solid var(--border);border-radius:var(--radius-lg);
+    padding:26px 20px;cursor:pointer;text-align:left;transition:transform .15s, border-color .15s, box-shadow .15s;
+  }
+  .picker-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
+  .picker-dot{width:14px;height:14px;border-radius:50%;margin-bottom:14px;}
+  .picker-card h3{font-size:19px;font-family:'Be Vietnam Pro';font-weight:800;margin-bottom:6px;}
+  .picker-card p{font-size:13px;color:var(--ink-soft);line-height:1.55;margin:0;}
+  .picker-card[data-c="bca"]{border-color:#c7d9f7;} .picker-card[data-c="bca"]:hover{border-color:#2f6fed;}
+  .picker-card[data-c="bca"] .picker-dot{background:#2f6fed;}
+  .picker-card[data-c="bca"] h3{color:#1a56a3;}
+  .picker-card[data-c="hsa"]{border-color:#cdeadb;} .picker-card[data-c="hsa"]:hover{border-color:#1f8a5c;}
+  .picker-card[data-c="hsa"] .picker-dot{background:#1f8a5c;}
+  .picker-card[data-c="hsa"] h3{color:#186b45;}
+  .picker-card[data-c="qda"]{border-color:#f3cfc9;} .picker-card[data-c="qda"]:hover{border-color:#a83229;}
+  .picker-card[data-c="qda"] .picker-dot{background:#a83229;}
+  .picker-card[data-c="qda"] h3{color:#8c2620;}
+  .picker-note{margin-top:24px;font-size:12.5px;color:var(--ink-soft);}
+  @media (max-width:700px){ .picker-grid{grid-template-columns:1fr;} }
+
+  #siteScreen{display:none;}
+  .course-switch{
+    display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;
+    padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.14);color:#fff;
+    text-decoration:none;border:1px solid rgba(255,255,255,.25);
+  }
+  .course-switch:hover{background:rgba(255,255,255,.22);}
+
+  /* ============================================================
+     13. RESPONSIVE
+     ============================================================ */
+  @media (max-width:860px){
+    .hero-inner{grid-template-columns:1fr;}
+    .video-grid{grid-template-columns:1fr;}
+    .hero-stats{gap:20px;}
+  }
+  @media (max-width:600px){
+    .topbar .wrap{justify-content:center;text-align:center;}
+    .section{padding:40px 0;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<!-- ================= MAN CHON KHOA HOC ================= -->
+<div id="pickerScreen">
+  <div class="picker-box">
+    <svg class="picker-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="50,4 93,27 93,73 50,96 7,73 7,27" fill="none" stroke="#f2994a" stroke-width="7"/>
+      <text x="50" y="61" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-weight="800" font-size="30" fill="#1f8a5c">HSA</text>
+    </svg>
+    <h1>Bạn đang học khóa nào?</h1>
+    <p class="picker-sub">Chọn đúng khóa để xem lịch học, nhóm Zalo và gửi yêu cầu hỗ trợ cho đúng lớp của bạn.</p>
+    <div class="picker-grid" id="pickerGrid"></div>
+    <div class="picker-note">Chọn xong hệ thống sẽ tự nhớ cho lần sau — không cần chọn lại mỗi lần vào trang.</div>
+  </div>
+</div>
+
+<!-- ================= NOI DUNG TRANG (theo khoa da chon) ================= -->
+<div id="siteScreen">
+<div class="topbar">
+  <div class="wrap">
+    <a href="tel:0963226269">☎ Hotline hỗ trợ: 0963 226 269</a>
+    <span class="brand-label" id="topbarBrand">Hệ thống giáo dục trực tuyến HSA Education</span>
+    <a href="#" class="course-switch" id="btnDoiKhoa">🔁 Đổi khóa học</a>
+  </div>
+</div>
+
+<!-- ================= HEADER ================= -->
+<div class="wrap">
+  <header class="masthead">
+    <a href="#" class="logo">
+      <svg class="logo-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="50,4 93,27 93,73 50,96 7,73 7,27" fill="none" stroke="#f2994a" stroke-width="7"/>
+        <text x="50" y="61" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-weight="800" font-size="30" fill="#1f8a5c">HSA</text>
+      </svg>
+      <div>
+        <div class="logo-word">HSA <span>EDUCATION</span></div>
+        <div class="logo-sub">Cổng thông tin lớp học</div>
+      </div>
+    </a>
+  </header>
+</div>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="wrap hero-inner">
+    <div>
+      <span class="eyebrow">★ Đánh giá năng lực – Tuyển sinh Bộ Công An 2027</span>
+      <h1 class="hero-title">Mọi thông tin lớp học <span class="accent">gọn trong một trang</span></h1>
+      <p class="hero-desc">Lịch học theo tuần, cách xử lý sự cố ClassIn, đầu mối liên hệ trợ giảng, tài liệu và video hướng dẫn — luôn cập nhật mới nhất, không cần dò lại tin nhắn Zalo.</p>
+      <div class="hero-stats" id="heroStats">
+        <div class="hero-stat"><b id="statLop">–</b><span>Lớp đang mở</span></div>
+        <div class="hero-stat"><b id="statTro">–</b><span>Trợ giảng đồng hành</span></div>
+        <div class="hero-stat"><b>90 phút</b><span>Mỗi buổi học</span></div>
+      </div>
+    </div>
+    <div class="hero-card">
+      <h3>Bạn cần gì lúc này?</h3>
+      <p>Chọn nhanh việc cần làm, hệ thống dẫn tới đúng phần bên dưới.</p>
+      <div class="hero-card-list">
+        <a class="hero-card-row" href="#lich-hoc"><span>📅 Xem lịch học tuần này</span><span class="pill">Đi tới</span></a>
+        <a class="hero-card-row" href="#xu-ly-su-co"><span>🛠 Xem hướng dẫn từng bước</span><span class="pill muted">Bước 1</span></a>
+        <a class="hero-card-row" href="#bao-loi"><span>📮 Báo lỗi / gửi yêu cầu</span><span class="pill orange">Bước 2</span></a>
+        <a class="hero-card-row" href="#quy-tac"><span>📋 Quy tắc học trên ClassIn</span><span class="pill muted">Đi tới</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 3 BƯỚC KHI GẶP VẤN ĐỀ ================= -->
+<section class="section" style="padding-top:38px;padding-bottom:10px;">
+  <div class="wrap">
+    <div class="flow-wrap">
+      <div class="flow-title">Gặp vấn đề? Làm lần lượt 3 bước sau</div>
+      <div class="flow-sub">Làm đúng thứ tự sẽ được xử lý nhanh nhất. Đừng bỏ qua bước 1 — phần lớn vấn đề tự làm được ngay.</div>
+      <div class="flow-grid">
+        <a class="flow-step b1" href="#xu-ly-su-co">
+          <div class="flow-num">1</div>
+          <h4>Tự làm theo hướng dẫn</h4>
+          <p>Các việc như đăng ký tài khoản, cài ClassIn, vào thi khảo sát… đều có hướng dẫn từng bước. Làm theo là xong, không cần chờ ai.</p>
+          <div class="flow-go">Xem hướng dẫn →</div>
+        </a>
+        <a class="flow-step b2" href="#bao-loi">
+          <div class="flow-num">2</div>
+          <h4>Làm rồi vẫn không được → Gửi yêu cầu</h4>
+          <p>Chọn đúng vấn đề rồi điền form. Đây là nơi <b>duy nhất</b> để báo lỗi — báo ở đây mới được ghi nhận và xử lý theo đợt.</p>
+          <div class="flow-go">Gửi yêu cầu →</div>
+        </a>
+        <a class="flow-step b3" href="#doi-ngu">
+          <div class="flow-num">3</div>
+          <h4>Việc gấp trong buổi học → Nhắn trực tiếp</h4>
+          <p>Chỉ dùng khi cần gấp (VD đang giờ học mà không vào được lớp). Xem phần việc từng người để nhắn đúng đầu mối.</p>
+          <div class="flow-go">Xem đầu mối →</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= VIDEO HƯỚNG DẪN ================= -->
+<section class="section" id="video">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">▶ Bắt đầu ở đây</span>
+      <h2 class="section-title">Hướng dẫn nhập học</h2>
+      <p class="section-sub">Xem video để nắm quy trình kích hoạt khóa và tham gia lớp học.</p>
+    </div>
+    <div class="video-grid" id="videoGrid"></div>
+  </div>
+</section>
+
+<!-- ================= HỆ THỐNG BÁO LỖI / GỬI YÊU CẦU ================= -->
+<section class="section" id="bao-loi">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">📮 BƯỚC 2 — Nơi duy nhất để báo lỗi</span>
+      <h2 class="section-title">Gửi yêu cầu hỗ trợ</h2>
+      <p class="section-sub"><b>Dùng khi:</b> bạn đã làm theo hướng dẫn ở Bước 1 mà vẫn chưa được.<br>Chọn đúng vấn đề → điền form → bộ phận vận hành xử lý theo đợt trong ngày. Sau đó bấm "Tra cứu kết quả" để tự xem tình trạng, không cần nhắn hỏi lại.</p>
+    </div>
+    <div class="form-toolbar">
+      <input class="form-search" id="formSearch" type="search" placeholder="🔍 Gõ vấn đề bạn gặp… (VD: khóa tài khoản, quên mật khẩu, sai SBD)" autocomplete="off">
+      <div class="form-chips" id="formChips"></div>
+    </div>
+    <div class="form-grid" id="formGrid"></div>
+  </div>
+</section>
+
+<!-- ================= XỬ LÝ SỰ CỐ (SỔ TAY) ================= -->
+<section class="section" id="xu-ly-su-co" style="background:var(--green-050)">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">🛠 BƯỚC 1 — Tự làm được ngay</span>
+      <h2 class="section-title">Hướng dẫn từng bước</h2>
+      <p class="section-sub"><b>Dùng khi:</b> bạn cần biết CÁCH LÀM một việc (đăng ký tài khoản, cài ClassIn, vào thi khảo sát…).<br>Đây là phần hướng dẫn — <b>không phải nơi báo lỗi</b>. Làm theo mà vẫn không được thì mới sang Bước 2 để gửi yêu cầu.</p>
+    </div>
+    <div class="faq-jump" id="faqJump"></div>
+    <div class="faq-list" id="faqList"></div>
+  </div>
+</section>
+
+<!-- ================= TÀI LIỆU ================= -->
+<section class="section">
+  <div class="wrap" style="max-width:760px">
+    <div class="section-head">
+      <span class="eyebrow">📖 Học thêm</span>
+      <h2 class="section-title">Tài liệu &amp; kênh bổ trợ</h2>
+      <p class="section-sub">Tài liệu, sổ tay và các kênh livestream bổ trợ kiến thức ngoài giờ học chính.</p>
+    </div>
+    <div class="card doc-list-wrap">
+      <div class="doc-list" id="docList"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ĐỘI NGŨ HỖ TRỢ ================= -->
+<section class="section" id="doi-ngu" style="background:var(--green-050)">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">🎧 BƯỚC 3 — Chỉ dùng khi gấp</span>
+      <h2 class="section-title">Bộ phận quản lý lớp &amp; vận hành</h2>
+      <p class="section-sub"><b>Dùng khi:</b> việc gấp trong buổi học, hoặc đã gửi yêu cầu ở Bước 2 quá lâu chưa được xử lý.<br>Xem phần việc của từng người để nhắn đúng đầu mối — nhắn sai người sẽ bị chuyển qua lại, chậm hơn.</p>
+    </div>
+    <div class="team-filter" id="teamFilter"></div>
+    <div class="staff-grid" id="staffGrid"></div>
+  </div>
+</section>
+
+<!-- ================= QUY TẮC HỌC TẬP ================= -->
+<section class="section" id="quy-tac">
+  <div class="wrap" style="max-width:860px">
+    <div class="section-head">
+      <span class="eyebrow">📋 Trước khi vào lớp</span>
+      <h2 class="section-title">Quy tắc học tập</h2>
+      <p class="section-sub">Để buổi học hiệu quả và nghiêm túc, học sinh cần nắm rõ các quy định sau.</p>
+    </div>
+    <div id="ruleList"></div>
+  </div>
+</section>
+
+<!-- ================= CHỌN LỚP + TKB ================= -->
+<section class="section" id="lich-hoc">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">🎓 Bạn thuộc lớp nào?</span>
+      <h2 class="section-title">Chọn lớp để xem lịch học & nhóm liên hệ</h2>
+    </div>
+    <div class="class-grid" id="classGrid"></div>
+
+    <div class="card card-pad" style="margin-top:24px;">
+      <div class="tkb-head">
+        <h3 id="tkbTitle">Thông tin lớp</h3>
+        <div class="sync-note" id="syncNote" style="margin:0;"><span class="dot" id="syncDot"></span><span id="syncText">Đang tải dữ liệu…</span></div>
+      </div>
+      <div class="tkb-scroll">
+        <table class="tkb" id="tkbTable" style="display:none;"></table>
+      </div>
+      <div class="tkb-empty" id="tkbEmpty" style="display:none;"></div>
+
+      <div class="link-groups" id="classLinkGroups"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="foot-brand">HSA EDUCATION</div>
+      <div class="foot-sub" id="footSub">Dữ liệu đồng bộ trực tiếp từ hệ thống quản lý lớp</div>
+    </div>
+    <div class="foot-links">
+      <a href="tel:0963226269">Hotline: 0963 226 269</a>
+      <a href="https://hsavnu.edu.vn" target="_blank" rel="noopener">hsavnu.edu.vn</a>
+    </div>
+  </div>
+</footer>
+</div><!-- /#siteScreen -->
+
+<script>
+/* ================================================================
+   ============  CẤU HÌNH DỮ LIỆU — SỬA DUY NHẤT Ở ĐÂY  ============
+   ================================================================
+   1. Tạo 1 Google Sheet (khuyên dùng: import file mau-du-lieu-HSA.xlsx)
+      với đủ 7 tab tên chính xác:
+      Lop | LopLink | TKB | TroGiang | Video | TaiLieu | HoTro
+   2. Share > General access > "Anyone with the link" > Viewer
+   3. Copy Sheet ID trong URL (đoạn giữa /d/ và /edit) và dán vào bên dưới.
+   Xem hướng dẫn đầy đủ trong file HUONG-DAN-SU-DUNG.md
+================================================================= */
+const CONFIG = {
+  SHEET_ID: "1SrASjzgLM2rIasjqW0D1Yoog5RzrAE4ubhlYV9sf1GY", // <-- 1 Sheet DUY NHẤT dùng chung cho cả 3 khóa
+  TABS: {
+    lop:"Lop", lopLink:"LopLink", tkb:"TKB", troGiang:"TroGiang",
+    video:"Video", taiLieu:"TaiLieu", hoTro:"HoTro",
+    quyTac:"QuyTac", form:"Form",
+  },
+  // ID câu hỏi "Chương trình" trong Google Form — lấy từ bảng thông báo
+  // sau khi chạy taoFormTongHop trong Apps Script, dán số đó vào đây.
+  FORM_CHUONGTRINH_ENTRY: "1878814540",
+};
+
+/* Định nghĩa 3 khóa học dùng chung 1 trang. Khóa nào cũng đọc chung 1 Sheet,
+   chỉ khác nhau ở: mã khóa (dùng để lọc tab Lop qua cột chuong_trinh),
+   tên hiển thị, và bảng màu áp cho toàn trang. */
+const COURSES = {
+  bca: { code:"BCA", ten:"BCA", tieuDeDayDu:"Đánh giá năng lực – Tuyển sinh Bộ Công An",
+         moTa:"Khóa ôn thi ĐGNL dành cho thí sinh xét tuyển vào các trường Công an nhân dân.", mau:"blue" },
+  hsa: { code:"HSA", ten:"HSA", tieuDeDayDu:"Đánh giá năng lực ĐHQG Hà Nội",
+         moTa:"Khóa ôn thi ĐGNL HSA – ĐHQG Hà Nội, gồm các lớp Tinh Hoa và Nền Tảng.", mau:"green" },
+  qda: { code:"QDA", ten:"QDA", tieuDeDayDu:"Đánh giá năng lực Bộ Quốc phòng",
+         moTa:"Khóa ôn thi ĐGNL dành cho thí sinh xét tuyển vào các trường Quân đội.", mau:"red" },
+};
+const PALETTES = {
+  blue:  {900:"#0d2a52",800:"#123a70",700:"#1a56a3",600:"#2f6fed",500:"#5089f0",100:"#e8f0fe","050":"#f5f8ff"},
+  green: {900:"#0d3d27",800:"#124a30",700:"#186b45",600:"#1f8a5c",500:"#2aa36e",100:"#e8f5ee","050":"#f5faf7"},
+  red:   {900:"#4a0f0d",800:"#5c1815",700:"#8c2620",600:"#a83229",500:"#c2453a",100:"#fdece9","050":"#fef7f6"},
+};
+const KHOA_KEY = "hsa_khoa_da_chon";
+let currentCourse = null; // "bca" | "hsa" | "qda"
+
+function applyTheme(mauKey){
+  const p = PALETTES[mauKey] || PALETTES.green;
+  const s = document.documentElement.style;
+  s.setProperty('--green-900', p[900]); s.setProperty('--green-800', p[800]);
+  s.setProperty('--green-700', p[700]); s.setProperty('--green-600', p[600]);
+  s.setProperty('--green-500', p[500]); s.setProperty('--green-100', p[100]);
+  s.setProperty('--green-050', p["050"]);
+}
+
+function urlCourse(){
+  const v = new URLSearchParams(location.search).get('khoa');
+  return (v && COURSES[v]) ? v : null;
+}
+function savedCourse(){
+  try{ const v = localStorage.getItem(KHOA_KEY); return (v && COURSES[v]) ? v : null; }catch(e){ return null; }
+}
+function chonKhoa(key){
+  currentCourse = key;
+  try{ localStorage.setItem(KHOA_KEY, key); }catch(e){}
+  const url = new URL(location.href);
+  url.searchParams.set('khoa', key);
+  history.replaceState(null, '', url);
+  applyTheme(COURSES[key].mau);
+  const c = COURSES[key];
+  document.title = `HSA EDUCATION – Cổng thông tin lớp học ${c.ten}`;
+  document.getElementById('topbarBrand').textContent = `Hệ thống giáo dục trực tuyến HSA EDUCATION · Khóa ${c.ten}`;
+  const logoSub = document.querySelector('.logo-sub');
+  if(logoSub) logoSub.textContent = `Cổng thông tin lớp học · ${c.ten}`;
+  const eyebrow = document.querySelector('.hero .eyebrow');
+  if(eyebrow) eyebrow.textContent = `★ ${c.tieuDeDayDu}`;
+  const heroDesc = document.querySelector('.hero-desc');
+  if(heroDesc) heroDesc.textContent = `${c.moTa} Lịch học theo tuần, hướng dẫn tự xử lý sự cố, nơi gửi yêu cầu hỗ trợ — luôn cập nhật mới nhất.`;
+  const footSub = document.getElementById('footSub');
+  if(footSub) footSub.textContent = `${c.tieuDeDayDu} · Dữ liệu đồng bộ trực tiếp từ hệ thống quản lý lớp`;
+  document.getElementById('pickerScreen').style.display = 'none';
+  document.getElementById('siteScreen').style.display = 'block';
+  loadAll();
+}
+function moManHinhChonKhoa(){
+  document.getElementById('siteScreen').style.display = 'none';
+  document.getElementById('pickerScreen').style.display = 'flex';
+}
+function renderPicker(){
+  const grid = document.getElementById('pickerGrid');
+  grid.innerHTML = Object.keys(COURSES).map(key=>{
+    const c = COURSES[key];
+    return `<div class="picker-card" data-c="${key}">
+      <div class="picker-dot"></div>
+      <h3>${c.ten}</h3>
+      <p>${c.moTa}</p>
+    </div>`;
+  }).join('');
+  grid.querySelectorAll('.picker-card').forEach(card=>{
+    card.onclick = ()=> chonKhoa(card.dataset.c);
+  });
+  document.getElementById('btnDoiKhoa').onclick = (e)=>{ e.preventDefault(); moManHinhChonKhoa(); };
+}
+
+function sheetCsvUrl(tab){
+  // Hỗ trợ CẢ 2 kiểu cấu hình TABS để không phá vỡ bản đã cài đặt sẵn:
+  //   - Kiểu tên tab:  tkb: "TKB"
+  //   - Kiểu có GID :  tkb: { name:"TKB", gid:"64984146" }
+  const bust = Date.now();
+  const base = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:csv&headers=1&_=${bust}`;
+  if(tab && typeof tab === 'object' && tab.gid && String(tab.gid).indexOf('DAN_GID')!==0){
+    return `${base}&gid=${encodeURIComponent(tab.gid)}`;
+  }
+  const name = (tab && typeof tab === 'object') ? tab.name : tab;
+  return `${base}&sheet=${encodeURIComponent(name)}`;
+}
+
+function tabConfigured(tab){
+  if(!tab) return false;
+  if(typeof tab === 'object'){
+    const hasGid = tab.gid && String(tab.gid).indexOf('DAN_GID')!==0;
+    return !!(hasGid || tab.name);
+  }
+  return true;
+}
+
+
+/* Dữ liệu mẫu — chỉ dùng để demo khi CHƯA gắn Google Sheet thật,
+   hoặc dùng tạm khi kết nối Sheet bị lỗi. */
+const SAMPLE_DATA = {
+  lop: [
+    {chuong_trinh:"BCA",ma_lop:"BCA01 - 2K9",ten_hien_thi:"Lớp BCA01 - 2K9",mo_ta_ngan:"Khóa Xuất phát sớm ĐGNL Bộ Công An",khai_giang:"17/05/2026",trang_thai:"Đang học",thu_tu:"1",hien_thi:"TRUE"},
+    {chuong_trinh:"BCA",ma_lop:"BCA02 - 2K9",ten_hien_thi:"Lớp BCA02 - 2K9",mo_ta_ngan:"Khóa Xuất phát sớm ĐGNL Bộ Công An",khai_giang:"16/08/2026",trang_thai:"Sắp khai giảng",thu_tu:"2",hien_thi:"TRUE"},
+    {chuong_trinh:"HSA",ma_lop:"TH01 - 2K9",ten_hien_thi:"Lớp TH01.2K9 - Tinh Hoa 01",mo_ta_ngan:"Khóa Xuất phát sớm ĐGNL ĐHQG Hà Nội",khai_giang:"01/04/2026",trang_thai:"Đang học",thu_tu:"1",hien_thi:"TRUE"},
+    {chuong_trinh:"HSA",ma_lop:"NT01 - 2K10",ten_hien_thi:"Lớp NT01.2K10 - Nền Tảng 01",mo_ta_ngan:"Khóa Nền tảng ĐGNL ĐHQG Hà Nội",khai_giang:"15/09/2026",trang_thai:"Sắp khai giảng",thu_tu:"2",hien_thi:"TRUE"},
+    {chuong_trinh:"QDA",ma_lop:"QDA01 - 2K9",ten_hien_thi:"Lớp QDA01.2K9",mo_ta_ngan:"Khóa Xuất phát sớm ĐGNL Bộ Quốc phòng",khai_giang:"01/04/2026",trang_thai:"Đang học",thu_tu:"1",hien_thi:"TRUE"},
+    {chuong_trinh:"QDA",ma_lop:"QDA02 - 2K9",ten_hien_thi:"Lớp QDA02.2K9",mo_ta_ngan:"Khóa Xuất phát sớm ĐGNL Bộ Quốc phòng",khai_giang:"10/06/2026",trang_thai:"Sắp khai giảng",thu_tu:"2",hien_thi:"TRUE"},
+  ],
+  lopLink: [
+    {ma_lop:"ALL",nhom:"Kích hoạt khóa học",tieu_de:"Trang kích hoạt & học tập (hsavnu.edu.vn)",link:"https://hsavnu.edu.vn",icon:"🔑",thu_tu:"1",hien_thi:"TRUE"},
+    {ma_lop:"BCA01 - 2K9",nhom:"Zalo học sinh",tieu_de:"Nhóm Zalo chính BCA01",link:"",icon:"💬",thu_tu:"1",hien_thi:"TRUE"},
+    {ma_lop:"BCA01 - 2K9",nhom:"Zalo phụ huynh",tieu_de:"Nhóm Zalo phụ huynh BCA01",link:"",icon:"👪",thu_tu:"2",hien_thi:"TRUE"},
+    {ma_lop:"BCA02 - 2K9",nhom:"Zalo học sinh",tieu_de:"Nhóm Zalo chính BCA02",link:"",icon:"💬",thu_tu:"1",hien_thi:"TRUE"},
+    {ma_lop:"TH01 - 2K9",nhom:"Zalo học sinh",tieu_de:"Nhóm Zalo chính TH01",link:"",icon:"💬",thu_tu:"1",hien_thi:"TRUE"},
+    {ma_lop:"NT01 - 2K10",nhom:"Zalo học sinh",tieu_de:"Nhóm Zalo chính NT01",link:"",icon:"💬",thu_tu:"1",hien_thi:"TRUE"},
+    {ma_lop:"QDA01 - 2K9",nhom:"Zalo học sinh",tieu_de:"Nhóm Zalo chính QDA01",link:"",icon:"💬",thu_tu:"1",hien_thi:"TRUE"},
+    {ma_lop:"QDA02 - 2K9",nhom:"Zalo học sinh",tieu_de:"Nhóm Zalo chính QDA02",link:"",icon:"💬",thu_tu:"1",hien_thi:"TRUE"},
+  ],
+  tkb: [
+    {ma_lop:"__BOQUA__",ca:"(dòng chắn - đừng xoá)",Thu2:"-",Thu3:"-",Thu4:"-",Thu5:"-",Thu6:"-",Thu7:"-",CN:"-",hinh_thuc:"-",ghi_chu:"-",thu_tu:"0"},
+    {ma_lop:"BCA01 - 2K9",ca:"20h00 - 21h30",Thu2:"",Thu3:"Toán Đại\nThầy Thắng",Thu4:"",Thu5:"",Thu6:"",Thu7:"",CN:"",hinh_thuc:"ClassIn",ghi_chu:"",thu_tu:"1"},
+    {ma_lop:"TH01 - 2K9",ca:"20h00 - 21h30",Thu2:"",Thu3:"Toán Đại\nThầy Thắng",Thu4:"",Thu5:"",Thu6:"",Thu7:"",CN:"",hinh_thuc:"ClassIn",ghi_chu:"",thu_tu:"1"},
+    {ma_lop:"QDA01 - 2K9",ca:"20h00 - 21h30",Thu2:"",Thu3:"Toán Đại\nThầy Thắng",Thu4:"",Thu5:"",Thu6:"",Thu7:"",CN:"",hinh_thuc:"ClassIn",ghi_chu:"",thu_tu:"1"},
+  ],
+  troGiang: [
+    {ho_ten:"Đinh Thị Phúc",chuc_vu:"Trưởng bộ phận",nhom_loc:"Quản lý chung",sdt:"0943114865",zalo_link:"",nhiem_vu:"Quản lý chung hoạt động vận hành lớp học.\nTiếp nhận phản ánh về chất lượng nhân sự và hoạt động lớp.\nHỗ trợ kiểm tra, theo dõi tình hình học tập của học sinh.",thu_tu:"1",hien_thi:"TRUE"},
+    {ho_ten:"Nguyễn Phúc Thanh",chuc_vu:"Lead Team",nhom_loc:"Website & Tài khoản",sdt:"0384409051",zalo_link:"",nhiem_vu:"Hỗ trợ website: mã kích hoạt, tài khoản, mật khẩu.\nSắp xếp thời khóa biểu các lớp.\nTổng hợp báo cáo tình hình hoạt động lớp học.",thu_tu:"2",hien_thi:"TRUE"},
+    {ho_ten:"Hoàng Tiến Minh",chuc_vu:"Quản lý lớp",nhom_loc:"Lớp học & Hỗ trợ",sdt:"0936685333",zalo_link:"",nhiem_vu:"Quản lý và hỗ trợ hoạt động lớp học.\nGiải đáp các thắc mắc chung trong nhóm hỏi đáp.\nHỗ trợ kiểm tra và cung cấp tài liệu học tập.\nMở lớp ClassIn và hỗ trợ học sinh trong suốt buổi học.",thu_tu:"3",hien_thi:"TRUE"},
+    {ho_ten:"Nguyễn Viết Quân",chuc_vu:"Quản lý nhập học",nhom_loc:"Nhập học & SBD",sdt:"0974187313",zalo_link:"",nhiem_vu:"Xác nhận và hỗ trợ gửi email nhập học sau khi đăng ký.\nCấp lại SBD, mã kích hoạt khi có sai sót trong email nhập học.\nHỗ trợ cập nhật SĐT Zalo, email, địa chỉ và thông tin cá nhân sau đăng ký.",thu_tu:"4",hien_thi:"TRUE"},
+    {ho_ten:"Đặng Ngọc Công",chuc_vu:"Hỗ trợ ID sách",nhom_loc:"Sách & Vận chuyển",sdt:"0363539005",zalo_link:"",nhiem_vu:"Hỗ trợ ID và mã kích hoạt sách trên website.",thu_tu:"5",hien_thi:"TRUE"},
+    {ho_ten:"Lê Văn Trì",chuc_vu:"Hỗ trợ vận chuyển sách",nhom_loc:"Sách & Vận chuyển",sdt:"0334642345",zalo_link:"",nhiem_vu:"Hỗ trợ cập nhật SĐT, địa chỉ nhận sách, mã vận đơn.\nHỗ trợ thay đổi thông tin nhận sách sau khi lên đơn.\nTiếp nhận và xử lý các vấn đề liên quan đến đơn hàng vận chuyển sách.",thu_tu:"6",hien_thi:"TRUE"},
+  ],
+  video: [
+    {tieu_de:"Hướng dẫn đăng ký & kích hoạt tài khoản Website",mo_ta:"Các bước tạo tài khoản, kích hoạt mã và chọn đúng lớp trên hsavnu.edu.vn",video_url:"https://youtu.be/seDYwEzYVbw",thu_tu:"1",hien_thi:"TRUE"},
+  ],
+  taiLieu: [
+    {tieu_de:"Fanpage HSA Education",mo_ta:"Thông báo chung, lịch livestream bổ trợ kiến thức",link:"https://www.facebook.com/hsaeducation.com.vn",thu_tu:"1",hien_thi:"TRUE"},
+    {tieu_de:"Group kín livestream",mo_ta:"Xem livestream bổ trợ; bản ghi lại được lưu trên Website",link:"https://www.facebook.com/groups/1509555213899255",thu_tu:"2",hien_thi:"TRUE"},
+    {tieu_de:"Tiktok HSA Education",mo_ta:"Mẹo làm bài và kiến thức ngắn theo từng chuyên đề",link:"https://www.tiktok.com/@hsa.education.official",thu_tu:"3",hien_thi:"TRUE"},
+  ],
+  hoTro: [
+    {muc_id:"1",muc_tieu_de:"ĐĂNG KÝ & KÍCH HOẠT TÀI KHOẢN WEBSITE",muc_mau:"xanh_duong",thu_tu:"1",dong_loai:"buoc",icon:"",noi_dung:"Bước 1. Truy cập hsavnu.edu.vn và tạo tài khoản bằng email của bạn.",link:"",hien_thi:"TRUE"},
+    {muc_id:"1",muc_tieu_de:"ĐĂNG KÝ & KÍCH HOẠT TÀI KHOẢN WEBSITE",muc_mau:"xanh_duong",thu_tu:"2",dong_loai:"buoc",icon:"",noi_dung:"Bước 2. Mở email đã đăng ký để lấy mã kích hoạt. Nếu không thấy, kiểm tra kỹ mục Spam và Quảng cáo (Promotions).",link:"",hien_thi:"TRUE"},
+    {muc_id:"1",muc_tieu_de:"ĐĂNG KÝ & KÍCH HOẠT TÀI KHOẢN WEBSITE",muc_mau:"xanh_duong",thu_tu:"3",dong_loai:"buoc",icon:"",noi_dung:"Bước 3. Vào mục Khóa học → chọn đúng lớp đã đăng ký → mở 1 buổi học bất kỳ → dán mã kích hoạt vào.",link:"",hien_thi:"TRUE"},
+    {muc_id:"1",muc_tieu_de:"ĐĂNG KÝ & KÍCH HOẠT TÀI KHOẢN WEBSITE",muc_mau:"xanh_duong",thu_tu:"4",dong_loai:"luu_y",icon:"",noi_dung:"📌 Mã kích hoạt chỉ nhập 1 LẦN DUY NHẤT. Những lần sau chỉ cần đăng nhập là học được ngay.",link:"",hien_thi:"TRUE"},
+    {muc_id:"2",muc_tieu_de:"CÀI CLASSIN & VÀO LỚP HỌC",muc_mau:"cam",thu_tu:"1",dong_loai:"buoc",icon:"",noi_dung:"Bước 1. Tải và cài phần mềm ClassIn về máy tính hoặc điện thoại.",link:"",hien_thi:"TRUE"},
+    {muc_id:"2",muc_tieu_de:"CÀI CLASSIN & VÀO LỚP HỌC",muc_mau:"cam",thu_tu:"2",dong_loai:"link",icon:"📌",noi_dung:"Hướng dẫn tạo tài khoản ClassIn (có ảnh từng bước)",link:"https://docs.google.com/document/d/1awsiDb2t1PfJ2EY3NwaC8vgFS9ESdGKG_zZ4wwtnv-Y/edit?tab=t.0",hien_thi:"TRUE"},
+    {muc_id:"2",muc_tieu_de:"CÀI CLASSIN & VÀO LỚP HỌC",muc_mau:"cam",thu_tu:"3",dong_loai:"buoc",icon:"",noi_dung:"Bước 2. Tạo tài khoản ClassIn bằng ĐÚNG email đã đăng ký khóa học.",link:"",hien_thi:"TRUE"},
+    {muc_id:"2",muc_tieu_de:"CÀI CLASSIN & VÀO LỚP HỌC",muc_mau:"cam",thu_tu:"4",dong_loai:"buoc",icon:"",noi_dung:"Bước 3. Chờ Quản lý lớp thêm bạn vào lớp — mất khoảng 24–48 giờ.",link:"",hien_thi:"TRUE"},
+    {muc_id:"2",muc_tieu_de:"CÀI CLASSIN & VÀO LỚP HỌC",muc_mau:"cam",thu_tu:"5",dong_loai:"luu_y",icon:"",noi_dung:"⏰ Quá 48 giờ chưa thấy lớp, HOẶC muốn đổi email ClassIn → sang mục Gửi yêu cầu hỗ trợ để báo.",link:"",hien_thi:"TRUE"},
+    {muc_id:"3",muc_tieu_de:"LÀM BÀI THI KHẢO SÁT HÀNG THÁNG",muc_mau:"xanh_la",thu_tu:"1",dong_loai:"buoc",icon:"",noi_dung:"Bước 1. Đăng nhập tài khoản trên website hsavnu.edu.vn.",link:"",hien_thi:"TRUE"},
+    {muc_id:"3",muc_tieu_de:"LÀM BÀI THI KHẢO SÁT HÀNG THÁNG",muc_mau:"xanh_la",thu_tu:"2",dong_loai:"buoc",icon:"",noi_dung:"Bước 2. Vào mục Khóa học → chọn đúng lớp bạn đang học.",link:"",hien_thi:"TRUE"},
+    {muc_id:"3",muc_tieu_de:"LÀM BÀI THI KHẢO SÁT HÀNG THÁNG",muc_mau:"xanh_la",thu_tu:"3",dong_loai:"buoc",icon:"",noi_dung:"Bước 3. Cuộn xuống cuối trang, tìm mục ĐỀ THI KHẢO SÁT HÀNG THÁNG rồi chọn bài thi.",link:"",hien_thi:"TRUE"},
+    {muc_id:"3",muc_tieu_de:"LÀM BÀI THI KHẢO SÁT HÀNG THÁNG",muc_mau:"xanh_la",thu_tu:"4",dong_loai:"luu_y",icon:"",noi_dung:"⚠️ Bài thi tự nộp hoặc tự nhảy phần là do lệch múi giờ. Chỉnh thiết bị về Hà Nội/Bangkok (GMT+7) rồi thi lại.",link:"",hien_thi:"TRUE"},
+    {muc_id:"4",muc_tieu_de:"XEM LẠI BÀI GIẢNG & LẤY TÀI LIỆU",muc_mau:"tim",thu_tu:"1",dong_loai:"buoc",icon:"",noi_dung:"Bước 1. Đăng nhập hsavnu.edu.vn → vào mục Khóa học → chọn lớp của bạn.",link:"",hien_thi:"TRUE"},
+    {muc_id:"4",muc_tieu_de:"XEM LẠI BÀI GIẢNG & LẤY TÀI LIỆU",muc_mau:"tim",thu_tu:"2",dong_loai:"buoc",icon:"",noi_dung:"Bước 2. Chọn đúng buổi học cần xem lại — video record và tài liệu nằm ngay trong buổi học đó.",link:"",hien_thi:"TRUE"},
+    {muc_id:"4",muc_tieu_de:"XEM LẠI BÀI GIẢNG & LẤY TÀI LIỆU",muc_mau:"tim",thu_tu:"3",dong_loai:"luu_y",icon:"",noi_dung:"📌 Video và tài liệu cập nhật liên tục sau mỗi buổi. Buổi vừa học chưa thấy video thì chờ thêm ít giờ rồi tải lại trang.",link:"",hien_thi:"TRUE"},
+  ],
+  quyTac: [
+    {nhom:"Nguyên tắc học trên ClassIn",mo_ta_nhom:"Để đảm bảo buổi học hiệu quả và nghiêm túc, học sinh cần tuân thủ các quy định sau",loai:"quy_dinh",noi_dung:"Bật camera, trang phục lịch sự, ngồi ngay ngắn.",thu_tu:"1",hien_thi:"TRUE"},
+    {nhom:"Nguyên tắc học trên ClassIn",mo_ta_nhom:"",loai:"quy_dinh",noi_dung:"Tham gia lớp đúng giờ, chuẩn bị bài trước buổi học.",thu_tu:"2",hien_thi:"TRUE"},
+    {nhom:"Nguyên tắc học trên ClassIn",mo_ta_nhom:"",loai:"quy_dinh",noi_dung:"Không bật mic tự do — chỉ mở mic khi có sự cho phép của giáo viên và quản lý lớp.",thu_tu:"3",hien_thi:"TRUE"},
+    {nhom:"Nguyên tắc học trên ClassIn",mo_ta_nhom:"",loai:"quy_dinh",noi_dung:"Trao đổi qua khung chat — mọi câu hỏi, thắc mắc sẽ được trợ giảng và giáo viên hỗ trợ qua chat.",thu_tu:"4",hien_thi:"TRUE"},
+    {nhom:"Nguyên tắc học trên ClassIn",mo_ta_nhom:"",loai:"quy_dinh",noi_dung:"Tuyệt đối không chat linh tinh, đùa cợt.",thu_tu:"5",hien_thi:"TRUE"},
+    {nhom:"Nguyên tắc học trên ClassIn",mo_ta_nhom:"",loai:"vi_pham",noi_dung:"Cảnh báo",thu_tu:"6",hien_thi:"TRUE"},
+    {nhom:"Nguyên tắc học trên ClassIn",mo_ta_nhom:"",loai:"vi_pham",noi_dung:"Kick khỏi lớp học",thu_tu:"7",hien_thi:"TRUE"},
+    {nhom:"Nguyên tắc học trên ClassIn",mo_ta_nhom:"",loai:"vi_pham",noi_dung:"Khóa tài khoản 1 tháng",thu_tu:"8",hien_thi:"TRUE"},
+    {nhom:"Nguyên tắc học trên ClassIn",mo_ta_nhom:"",loai:"nhan_manh",noi_dung:"ĐẶC BIỆT: Hãy là người học văn minh — có trách nhiệm — tôn trọng lớp học!",thu_tu:"9",hien_thi:"TRUE"},
+  ],
+  form: [
+    {nhom:"Tài khoản Website",tieu_de:"Tài khoản bị khóa",mo_ta:"Đăng nhập quá 3 thiết bị/trình duyệt cùng lúc sẽ bị khóa tự động.",icon:"🔒",link_form:"https://forms.gle/vJCUSJSS7u1S8ECm9",link_tra_cuu:"https://script.google.com/macros/s/AKfycbxFn-JCbjBEDaUcvsJs-xyXJ2hjViCgoHKwLgxMWapSukjoztyzbII3_oZZO2TOaz2seg/exec",nguoi_xu_ly:"Nguyễn Phúc Thanh",thoi_gian_xu_ly:"T2 · T4 · T6 · CN, khoảng 22:00",dung_link_rieng:"TRUE",thu_tu:"1",hien_thi:"TRUE"},
+    {nhom:"Tài khoản Website",tieu_de:"Quên mật khẩu / không đăng nhập được",mo_ta:"Không truy cập được tài khoản trên hsavnu.edu.vn.",icon:"🔑",link_form:"",link_tra_cuu:"",nguoi_xu_ly:"Nguyễn Phúc Thanh",thoi_gian_xu_ly:"Trong giờ hành chính",dung_link_rieng:"",thu_tu:"2",hien_thi:"TRUE"},
+    {nhom:"Nhập học & SBD",tieu_de:"Sai SBD / sai thông tin nhập học",mo_ta:"Thông tin trong email nhập học bị sai, cần cấp lại.",icon:"🆔",link_form:"",link_tra_cuu:"",nguoi_xu_ly:"Nguyễn Viết Quân",thoi_gian_xu_ly:"Trong giờ hành chính",dung_link_rieng:"",thu_tu:"3",hien_thi:"TRUE"},
+    {nhom:"ClassIn",tieu_de:"Chưa được thêm vào lớp ClassIn",mo_ta:"Đã tạo tài khoản ClassIn nhưng quá 48h chưa thấy lớp.",icon:"🏫",link_form:"",link_tra_cuu:"",nguoi_xu_ly:"Hoàng Tiến Minh",thoi_gian_xu_ly:"Xử lý trong 24–48h",dung_link_rieng:"",thu_tu:"4",hien_thi:"TRUE"},
+    {nhom:"Sách & Vận chuyển",tieu_de:"Chưa nhận được sách / tra mã vận đơn",mo_ta:"Kiểm tra tình trạng đơn hàng sách.",icon:"📦",link_form:"",link_tra_cuu:"",nguoi_xu_ly:"Lê Văn Trì",thoi_gian_xu_ly:"Trong giờ hành chính",dung_link_rieng:"",thu_tu:"5",hien_thi:"TRUE"},
+    {nhom:"Học tập",tieu_de:"Hỏi bài / thắc mắc kiến thức",mo_ta:"Câu hỏi về bài tập hoặc nội dung chưa hiểu trên lớp.",icon:"💬",link_form:"https://docs.google.com/document/d/1IV5q8sAoQu3KEeh-C8eDVyc8rlN8bRESPwaE6MJxpiA/edit?tab=t.0",link_tra_cuu:"",nguoi_xu_ly:"Hoàng Tiến Minh",thoi_gian_xu_ly:"Trong ngày",dung_link_rieng:"TRUE",thu_tu:"6",hien_thi:"TRUE"},
+  ],
+};
+
+/* ================================================================
+   TIỆN ÍCH
+================================================================= */
+function truthy(v){
+  if(v===undefined||v===null) return true;
+  const s = String(v).trim().toUpperCase();
+  return !(s==="FALSE"||s==="0"||s==="AN"||s==="ẨN"||s==="");
+}
+/* Chuẩn hoá mã lớp: cắt khoảng trắng thừa + xoá ký tự vô hình (zero-width, BOM...)
+   để một dấu cách/ký tự ẩn gõ nhầm trong Sheet không làm rớt cả dòng khỏi kết quả so khớp. */
+function normId(v){
+  return String(v||'').replace(/[\u200B-\u200D\uFEFF\u00A0]/g,'').trim();
+}
+function cleanMaLop(rows){
+  rows.forEach(r=>{ if('ma_lop' in r) r.ma_lop = normId(r.ma_lop); });
+  return rows;
+}
+/* Loại bỏ DÒNG CHẮN (ma_lop bắt đầu bằng "__", VD __BOQUA__).
+   Dòng chắn được đặt ngay dưới hàng tiêu đề trong Sheet để "hứng" lỗi hiếm gặp của Google
+   (thỉnh thoảng nuốt mất dòng dữ liệu đầu tiên). Nếu Google có nuốt thì nuốt đúng dòng này,
+   dữ liệu lịch học thật phía dưới vẫn còn nguyên. */
+function boDongChan(rows){
+  return rows.filter(r=>{
+    const v = normId(r && r.ma_lop).toUpperCase();
+    return v.indexOf('__') !== 0;
+  });
+}
+/* So khớp mã lớp KHÔNG phân biệt hoa/thường, khoảng trắng, hay kiểu gạch ngang
+   (TH01 - 2K9 / TH01-2K9 / th01–2k9 đều được coi là cùng 1 lớp). Chỉ dùng để SO KHỚP,
+   không dùng để hiển thị — hiển thị vẫn lấy nguyên ma_lop gốc. */
+function classKey(v){
+  return normId(v).toLowerCase().replace(/\s+/g,'').replace(/[\u2010-\u2015]/g,'-');
+}
+function hasLink(v){ return !!(v && String(v).trim() && String(v).trim()!=="#"); }
+/* Gắn sẵn "Chương trình bạn đang học" vào link Google Form dựa theo khóa
+   đang chọn trên trang, để học sinh không phải tự chọn lại trong form.
+   Cần FORM_CHUONGTRINH_ENTRY (lấy 1 lần từ Apps Script sau khi tạo Form). */
+function appendChuongTrinh(url){
+  const entryId = CONFIG.FORM_CHUONGTRINH_ENTRY;
+  if(!entryId || String(entryId).indexOf('DAN_ENTRY_ID')===0) return url;
+  const khoa = (COURSES[currentCourse] || COURSES.bca).code;
+  const sep = url.indexOf('?')>-1 ? '&' : '?';
+  return `${url}${sep}entry.${entryId}=${encodeURIComponent(khoa)}`;
+}
+function sortByThuTu(a,b){ return (parseFloat(a.thu_tu)||0) - (parseFloat(b.thu_tu)||0); }
+function initials(name){ return (name||"?").trim().split(/\s+/).slice(-2).map(w=>w[0]).join("").toUpperCase(); }
+function iconForNhom(n){
+  const map = {"Zalo học sinh":"💬","Zalo phụ huynh":"👪","Kích hoạt khóa học":"🔑","Hỏi đáp trợ giảng":"❓"};
+  return map[n] || "🔗";
+}
+/* Tự nhận diện mọi kiểu link YouTube (dán nguyên link chia sẻ cũng được, không bắt buộc /embed/ nữa):
+   youtu.be/<id> | youtube.com/watch?v=<id> | youtube.com/shorts/<id> | youtube.com/embed/<id> */
+function toYoutubeEmbed(url){
+  const raw = (url||'').trim();
+  if(!raw) return raw;
+  try{
+    const u = new URL(raw);
+    const host = u.hostname.replace(/^www\.|^m\./,'');
+    let id = '';
+    if(host === 'youtu.be'){
+      id = u.pathname.slice(1);
+    }else if(host === 'youtube.com'){
+      if(u.pathname === '/watch') id = u.searchParams.get('v') || '';
+      else if(u.pathname.startsWith('/embed/')) id = u.pathname.split('/embed/')[1];
+      else if(u.pathname.startsWith('/shorts/')) id = u.pathname.split('/shorts/')[1];
+    }
+    id = (id||'').split(/[?&]/)[0];
+    return id ? `https://www.youtube.com/embed/${id}` : raw;
+  }catch(e){ return raw; }
+}
+
+function fetchTabOnce(tab){
+  return new Promise((resolve)=>{
+    Papa.parse(sheetCsvUrl(tab), {
+      download:true, header:true, skipEmptyLines:true,
+      complete: (res)=> resolve({ok:true, data: res.data || []}),
+      error: ()=> resolve({ok:false, data: null})
+    });
+  });
+}
+async function fetchTab(tab){
+  if(!CONFIG.SHEET_ID || CONFIG.SHEET_ID.indexOf("DAN_SHEET_ID")===0 || !tabConfigured(tab)){
+    return {ok:false, data:null, skipped:true};
+  }
+  let res = await fetchTabOnce(tab);
+  // gviz thỉnh thoảng tự trả về ô rỗng một cách ngẫu nhiên (lỗi đã được report trên
+  // Google Groups nhiều năm nay, không sửa được từ phía client) — thử lại tối đa 2 lần nữa.
+  for(let attempt=0; attempt<2 && !res.ok; attempt++){
+    await new Promise(r=>setTimeout(r, 700 + attempt*500));
+    res = await fetchTabOnce(tab);
+  }
+  return res;
+}
+
+/* ================================================================
+   TẢI DỮ LIỆU + RENDER
+================================================================= */
+let DATA = { lop:[], lopLink:[], tkb:[], troGiang:[], video:[], taiLieu:[], hoTro:[], quyTac:[], form:[] };
+let selectedClass = null;
+let teamFilterState = "tat_ca";
+let formFilterState = "tat_ca";
+let formSearchQuery = "";
+
+async function loadAll(){
+  const syncText = document.getElementById('syncText');
+  const syncDot = document.getElementById('syncDot');
+  try{
+    const [lop, lopLink, tkb, troGiang, video, taiLieu, hoTro, quyTac, form] = await Promise.all([
+      fetchTab(CONFIG.TABS.lop), fetchTab(CONFIG.TABS.lopLink), fetchTab(CONFIG.TABS.tkb),
+      fetchTab(CONFIG.TABS.troGiang), fetchTab(CONFIG.TABS.video), fetchTab(CONFIG.TABS.taiLieu),
+      fetchTab(CONFIG.TABS.hoTro), fetchTab(CONFIG.TABS.quyTac), fetchTab(CONFIG.TABS.form),
+    ]);
+    // dùng dữ liệu mẫu khi: chưa cấu hình Sheet, HOẶC tải thật sự lỗi.
+    // Nếu tải THÀNH CÔNG nhưng tab đang trống (VD TaiLieu chưa ai điền) thì hiển thị
+    // đúng trạng thái RỖNG THẬT, không âm thầm thay bằng dữ liệu mẫu giả.
+    function pick(res, sampleArr){ return res.ok ? res.data : sampleArr; }
+    const khoaHienTai = (COURSES[currentCourse] || COURSES.bca).code;
+    DATA.lop      = pick(lop, SAMPLE_DATA.lop)
+                      .filter(r=>truthy(r.hien_thi))
+                      .filter(r=>String(r.chuong_trinh||'').trim().toUpperCase()===khoaHienTai)
+                      .sort(sortByThuTu);
+    DATA.lopLink  = pick(lopLink, SAMPLE_DATA.lopLink).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
+    DATA.tkb      = pick(tkb, SAMPLE_DATA.tkb);
+    DATA.troGiang = pick(troGiang, SAMPLE_DATA.troGiang).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
+    DATA.video    = pick(video, SAMPLE_DATA.video).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
+    DATA.taiLieu  = pick(taiLieu, SAMPLE_DATA.taiLieu).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
+    DATA.hoTro    = pick(hoTro, SAMPLE_DATA.hoTro).filter(r=>truthy(r.hien_thi));
+    DATA.quyTac   = pick(quyTac, SAMPLE_DATA.quyTac).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
+    DATA.form     = pick(form, SAMPLE_DATA.form).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
+
+    cleanMaLop(DATA.lop); cleanMaLop(DATA.lopLink); cleanMaLop(DATA.tkb);
+    DATA.lop = boDongChan(DATA.lop);
+    DATA.lopLink = boDongChan(DATA.lopLink);
+    DATA.tkb = boDongChan(DATA.tkb);
+
+    const anyTabConfigured = Object.values(CONFIG.TABS).some(tabConfigured);
+    const notConfigured = !CONFIG.SHEET_ID || CONFIG.SHEET_ID.indexOf("DAN_SHEET_ID")===0 || !anyTabConfigured;
+    const tabResults = { Lop:lop, LopLink:lopLink, TKB:tkb, TroGiang:troGiang, Video:video, TaiLieu:taiLieu, HoTro:hoTro, QuyTac:quyTac, Form:form };
+    const failedTabs = Object.keys(tabResults).filter(k=>!tabResults[k].ok);
+
+    if(notConfigured){
+      syncDot.classList.remove('err');
+      syncText.textContent = "Đang hiển thị dữ liệu mẫu — điền Sheet ID và GID từng tab trong index.html để dùng dữ liệu thật";
+    }else if(failedTabs.length===0){
+      syncDot.classList.remove('err');
+      syncText.textContent = "Đã đồng bộ dữ liệu từ Google Sheet";
+    }else if(failedTabs.length===Object.keys(tabResults).length){
+      syncDot.classList.add('err');
+      syncText.textContent = "Không tải được Google Sheet — đang hiển thị dữ liệu mẫu. Tải lại trang để thử lại.";
+    }else{
+      // chỉ một số tab lỗi — nói rõ đúng tab nào để không bị nhầm là lỗi dữ liệu
+      syncDot.classList.add('err');
+      syncText.textContent = `Lỗi tải tab: ${failedTabs.join(', ')} — các mục này đang tạm dùng dữ liệu mẫu. Tải lại trang để thử lại.`;
+    }
+  }catch(e){
+    Object.assign(DATA, SAMPLE_DATA);
+    syncDot.classList.add('err');
+    syncText.textContent = "Không tải được Google Sheet — đang hiển thị dữ liệu mẫu";
+  }
+
+  renderVideos();
+  renderForms();
+  renderRules();
+  renderFaq();
+  renderDocs();
+  renderTeam();
+  renderClassPicker();
+}
+
+/* ---------- VIDEO ---------- */
+function renderVideos(){
+  const grid = document.getElementById('videoGrid');
+  if(!DATA.video.length){ grid.innerHTML = `<div class="tkb-empty" style="grid-column:1/-1;">Chưa có video hướng dẫn nào.</div>`; return; }
+  grid.innerHTML = DATA.video.map(v=>`
+    <div class="card video-card">
+      <div class="video-frame"><iframe src="${toYoutubeEmbed(v.video_url)}" title="${v.tieu_de}" allowfullscreen loading="lazy"></iframe></div>
+      <div class="video-body">
+        <h4>${v.tieu_de||''}</h4><p>${v.mo_ta||''}</p>
+        <a class="faq-link" style="margin-top:10px;" href="${v.video_url}" target="_blank" rel="noopener">↗ Video không hiện? Mở trong tab mới</a>
+      </div>
+    </div>`).join('');
+}
+
+/* ---------- XỬ LÝ SỰ CỐ ---------- */
+function renderFaq(){
+  const jumpEl = document.getElementById('faqJump');
+  const listEl = document.getElementById('faqList');
+  if(!DATA.hoTro.length){
+    jumpEl.innerHTML = '';
+    listEl.innerHTML = `<div class="tkb-empty">Chưa có nội dung xử lý sự cố.</div>`;
+    return;
+  }
+  // gom theo muc_id, thứ tự MỤC = thứ tự xuất hiện đầu tiên của mục đó từ trên xuống trong Sheet
+  // (không dùng cột muc_thu_tu nữa vì rất dễ bị nhầm với cột thu_tu của từng dòng con)
+  const mucMap = new Map();
+  DATA.hoTro.forEach(r=>{
+    if(!mucMap.has(r.muc_id)){
+      mucMap.set(r.muc_id, { id:r.muc_id, tieu_de:r.muc_tieu_de, mau:r.muc_mau, rows:[] });
+    }
+    mucMap.get(r.muc_id).rows.push(r);
+  });
+  const mucs = [...mucMap.values()]; // Map giữ nguyên thứ tự chèn = thứ tự xuất hiện trong Sheet
+  mucs.forEach((m,i)=> { m.thu_tu = i+1; m.rows.sort(sortByThuTu); });
+
+  jumpEl.innerHTML = mucs.map(m=>`<a href="#faq-muc-${m.id}">${m.thu_tu}. ${m.tieu_de}</a>`).join('');
+
+  listEl.innerHTML = mucs.map(m=>{
+    const color = `var(--c-${m.mau||'xanh_duong'})`;
+    const body = m.rows.map(r=>{
+      if(r.dong_loai==='buoc'){
+        return `<div class="faq-step">${r.noi_dung||''}</div>`;
+      }
+      if(r.dong_loai==='luu_y'){
+        return `<div class="faq-note">${r.noi_dung||''}</div>`;
+      }
+      // link
+      const ok = hasLink(r.link);
+      return `<a class="faq-link ${ok?'':'disabled'}" href="${ok?r.link:'#'}" target="_blank" rel="noopener">${r.icon||'🔗'} ${r.noi_dung||''}</a>`;
+    }).join('');
+    return `
+      <div class="faq-card" id="faq-muc-${m.id}">
+        <div class="faq-head" style="background:${color}">
+          <div class="faq-num">${m.thu_tu}</div>
+          <h4>${m.tieu_de}</h4>
+        </div>
+        <div class="faq-body">${body}</div>
+      </div>`;
+  }).join('');
+}
+
+/* ---------- TÀI LIỆU ---------- */
+function renderDocs(){
+  const list = document.getElementById('docList');
+  if(!DATA.taiLieu.length){ list.innerHTML = `<div class="tkb-empty">Chưa có tài liệu nào.</div>`; return; }
+  list.innerHTML = DATA.taiLieu.map((d,i)=>`
+    <a class="doc-row" href="${d.link||'#'}" target="_blank" rel="noopener" style="${i>0?'border-top:1px solid var(--border)':''}">
+      <div class="doc-icon">📄</div>
+      <div class="doc-text"><h4>${d.tieu_de||''}</h4><p>${d.mo_ta||''}</p></div>
+      <div class="doc-arrow">→</div>
+    </a>`).join('');
+}
+
+/* ---------- NHÂN SỰ VẬN HÀNH ---------- */
+function splitDuties(v){
+  return String(v||'').split(/\r?\n|;/).map(s=>s.trim()).filter(Boolean);
+}
+function renderTeam(){
+  const filterBar = document.getElementById('teamFilter');
+  const grid = document.getElementById('staffGrid');
+  if(!DATA.troGiang.length){
+    filterBar.innerHTML = '';
+    grid.innerHTML = `<div class="tkb-empty form-empty">Chưa có thông tin nhân sự.</div>`;
+    return;
+  }
+  // chip lọc TỰ SINH từ cột nhom_loc trong Sheet — thêm nhóm mới ở Sheet là chip tự xuất hiện
+  const groups = [];
+  DATA.troGiang.forEach(t=>{
+    const g = (t.nhom_loc||'').trim();
+    if(g && !groups.includes(g)) groups.push(g);
+  });
+  filterBar.innerHTML =
+    `<button class="filter-btn ${teamFilterState==='tat_ca'?'active':''}" data-f="tat_ca">Tất cả</button>` +
+    groups.map(g=>`<button class="filter-btn ${teamFilterState===g?'active':''}" data-f="${g}">${g}</button>`).join('');
+  filterBar.querySelectorAll('.filter-btn').forEach(btn=>{
+    btn.onclick = ()=>{ teamFilterState = btn.dataset.f; renderTeam(); };
+  });
+
+  const rows = teamFilterState==='tat_ca'
+    ? DATA.troGiang
+    : DATA.troGiang.filter(t=>(t.nhom_loc||'').trim()===teamFilterState);
+
+  if(!rows.length){
+    grid.innerHTML = `<div class="tkb-empty form-empty">Chưa có ai trong nhóm này.</div>`;
+    return;
+  }
+  grid.innerHTML = rows.map(t=>{
+    const duties = splitDuties(t.nhiem_vu);
+    const tel = (t.sdt||'').replace(/\s/g,'');
+    const zalo = hasLink(t.zalo_link) ? t.zalo_link : (tel ? `https://zalo.me/${tel}` : '');
+    return `
+    <div class="card staff-card">
+      <div class="staff-top">
+        <div class="staff-avatar">${initials(t.ho_ten)}</div>
+        <div>
+          <div class="staff-role">${t.chuc_vu||''}</div>
+          <div class="staff-name">${t.ho_ten||''}</div>
+          ${t.nhom_loc?`<span class="staff-tag">${t.nhom_loc}</span>`:''}
+        </div>
+      </div>
+      ${duties.length?`<ul class="staff-duties">${duties.map(d=>`<li>${d}</li>`).join('')}</ul>`:''}
+      <div class="staff-actions">
+        ${tel?`<a class="staff-btn primary" href="tel:${tel}">📞 ${t.sdt}</a>`:''}
+        ${zalo?`<a class="staff-btn" href="${zalo}" target="_blank" rel="noopener">💬 Nhắn Zalo</a>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- QUY TẮC HỌC TẬP ---------- */
+function renderRules(){
+  const wrap = document.getElementById('ruleList');
+  if(!DATA.quyTac.length){
+    wrap.innerHTML = `<div class="tkb-empty">Chưa có nội dung quy tắc học tập.</div>`;
+    return;
+  }
+  const map = new Map();
+  DATA.quyTac.forEach(r=>{
+    const key = r.nhom || 'Quy tắc';
+    if(!map.has(key)) map.set(key, {nhom:key, mo_ta:'', rows:[]});
+    const g = map.get(key);
+    if(!g.mo_ta && r.mo_ta_nhom) g.mo_ta = r.mo_ta_nhom;
+    g.rows.push(r);
+  });
+
+  wrap.innerHTML = [...map.values()].map(g=>{
+    const quyDinh  = g.rows.filter(r=>r.loai==='quy_dinh');
+    const viPham   = g.rows.filter(r=>r.loai==='vi_pham');
+    const nhanManh = g.rows.filter(r=>r.loai==='nhan_manh');
+    return `
+    <div class="card rule-card">
+      <div class="rule-head">
+        <h3>${g.nhom}</h3>
+        ${g.mo_ta?`<p>${g.mo_ta}</p>`:''}
+      </div>
+      <div class="rule-body">
+        ${quyDinh.map(r=>`<div class="rule-item"><span class="rule-dot">●</span><span>${r.noi_dung||''}</span></div>`).join('')}
+        ${viPham.length?`
+          <div class="rule-steps">
+            <div class="rule-steps-title">⚠️ Nếu vi phạm</div>
+            ${viPham.map((r,i)=>`<div class="rule-step"><b>${i+1}</b><span>${r.noi_dung||''}</span></div>`).join('')}
+          </div>`:''}
+        ${nhanManh.map(r=>`<div class="rule-highlight">${r.noi_dung||''}</div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- HỆ THỐNG BÁO LỖI / GỬI YÊU CẦU ---------- */
+function renderForms(){
+  const chipBar = document.getElementById('formChips');
+  const grid = document.getElementById('formGrid');
+  const search = document.getElementById('formSearch');
+
+  if(search && !search.dataset.bound){
+    search.dataset.bound = "1";
+    search.addEventListener('input', ()=>{
+      formSearchQuery = search.value.trim().toLowerCase();
+      renderForms();
+    });
+  }
+
+  if(!DATA.form.length){
+    chipBar.innerHTML = '';
+    grid.innerHTML = `<div class="tkb-empty form-empty">Chưa có mục nào trong hệ thống báo lỗi.</div>`;
+    return;
+  }
+
+  // chip danh mục TỰ SINH từ cột nhom — thêm nhóm mới ở Sheet là chip tự xuất hiện
+  const cats = [];
+  DATA.form.forEach(f=>{
+    const c = (f.nhom||'').trim();
+    if(c && !cats.includes(c)) cats.push(c);
+  });
+  chipBar.innerHTML =
+    `<button class="filter-btn ${formFilterState==='tat_ca'?'active':''}" data-f="tat_ca">Tất cả</button>` +
+    cats.map(c=>`<button class="filter-btn ${formFilterState===c?'active':''}" data-f="${c}">${c}</button>`).join('');
+  chipBar.querySelectorAll('.filter-btn').forEach(btn=>{
+    btn.onclick = ()=>{ formFilterState = btn.dataset.f; renderForms(); };
+  });
+
+  let rows = formFilterState==='tat_ca'
+    ? DATA.form
+    : DATA.form.filter(f=>(f.nhom||'').trim()===formFilterState);
+
+  if(formSearchQuery){
+    rows = rows.filter(f=>{
+      const hay = [f.tieu_de, f.mo_ta, f.nhom, f.nguoi_xu_ly].join(' ').toLowerCase();
+      return hay.includes(formSearchQuery);
+    });
+  }
+
+  if(!rows.length){
+    grid.innerHTML = `<div class="tkb-empty form-empty">Không tìm thấy vấn đề nào khớp. Thử từ khoá khác, hoặc liên hệ trực tiếp bộ phận vận hành ở mục bên dưới.</div>`;
+    return;
+  }
+
+  grid.innerHTML = rows.map(f=>{
+    const okForm = hasLink(f.link_form);
+    const formUrl = okForm ? appendChuongTrinh(f.link_form) : '#';
+    const okTra  = hasLink(f.link_tra_cuu);
+    return `
+    <div class="card issue-card">
+      <div class="issue-top">
+        <div class="issue-icon">${f.icon||'📩'}</div>
+        <div>
+          <div class="issue-cat">${f.nhom||''}</div>
+          <div class="issue-title">${f.tieu_de||''}</div>
+        </div>
+      </div>
+      ${f.mo_ta?`<div class="issue-desc">${f.mo_ta}</div>`:''}
+      <div class="issue-meta">
+        ${f.nguoi_xu_ly?`<span>👤 Phụ trách: <b>${f.nguoi_xu_ly}</b></span>`:''}
+        ${f.thoi_gian_xu_ly?`<span>⏱ Xử lý: <b>${f.thoi_gian_xu_ly}</b></span>`:''}
+      </div>
+      <div class="issue-actions">
+        <a class="issue-btn ${okForm?'':'disabled'}" href="${formUrl}" target="_blank" rel="noopener">
+          ${okForm?'📮 Gửi yêu cầu':'Đang cập nhật form'}
+        </a>
+        ${okTra?`<a class="issue-btn ghost" href="${f.link_tra_cuu}" target="_blank" rel="noopener">🔍 Tra cứu kết quả</a>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- CHỌN LỚP ---------- */
+function renderClassPicker(){
+  const grid = document.getElementById('classGrid');
+  if(!DATA.lop.length){
+    grid.innerHTML = `<div class="tkb-empty">Chưa có lớp nào được mở.</div>`;
+    document.getElementById('tkbEmpty').style.display='block';
+    document.getElementById('tkbEmpty').textContent = 'Chưa có lớp học nào.';
+    return;
+  }
+  if(!selectedClass || !DATA.lop.find(l=>classKey(l.ma_lop)===selectedClass)){ selectedClass = classKey(DATA.lop[0].ma_lop); }
+  grid.innerHTML = DATA.lop.map(l=>`
+    <button class="class-pick ${classKey(l.ma_lop)===selectedClass?'selected':''}" data-lop="${classKey(l.ma_lop)}">
+      <div class="check">✓</div>
+      <h4>${l.ten_hien_thi||l.ma_lop}</h4>
+      <p>${l.mo_ta_ngan||''}${l.khai_giang?(' · Khai giảng '+l.khai_giang):''}</p>
+      <div class="status"><span class="pill ${l.trang_thai==='Đang học'?'':'orange'}">${l.trang_thai||''}</span></div>
+    </button>`).join('');
+  grid.querySelectorAll('.class-pick').forEach(btn=>{
+    btn.onclick = ()=>{ selectedClass = btn.dataset.lop; renderClassPicker(); renderClassDetail(); };
+  });
+
+  document.getElementById('statLop').textContent = DATA.lop.length;
+  document.getElementById('statTro').textContent = DATA.troGiang.length;
+
+  renderClassDetail();
+}
+
+/* ---------- CHI TIẾT LỚP: TKB dạng lưới + LINK theo nhóm ---------- */
+const THU_COLS = [
+  {key:'Thu2',l:'Thứ 2',v:2},{key:'Thu3',l:'Thứ 3',v:3},{key:'Thu4',l:'Thứ 4',v:4},
+  {key:'Thu5',l:'Thứ 5',v:5},{key:'Thu6',l:'Thứ 6',v:6},{key:'Thu7',l:'Thứ 7',v:7},{key:'CN',l:'Chủ nhật',v:8},
+];
+function todayThuValue(){ const map = {0:8,1:2,2:3,3:4,4:5,5:6,6:7}; return map[new Date().getDay()]; }
+
+function renderClassDetail(){
+  const classObj = DATA.lop.find(l=>classKey(l.ma_lop)===selectedClass);
+  document.getElementById('tkbTitle').textContent = classObj ? `Thông tin ${classObj.ten_hien_thi}` : 'Thông tin lớp';
+
+  const rows = DATA.tkb.filter(r=>classKey(r.ma_lop)===selectedClass).sort(sortByThuTu);
+  const table = document.getElementById('tkbTable');
+  const empty = document.getElementById('tkbEmpty');
+  const today = todayThuValue();
+
+  if(!rows.length){
+    table.style.display='none';
+    empty.style.display='block';
+    empty.textContent = 'Lịch học đang được cập nhật — theo dõi nhóm Zalo lớp để nhận thông báo mới nhất.';
+  }else{
+    empty.style.display='none';
+    table.style.display='table';
+
+    const thead = `<thead><tr>
+      <th class="ca-col">Ca</th>
+      ${THU_COLS.map(d=>`<th class="${d.v===today?'today':''}">${d.l}${d.v===today?'<span class="today-tag">Hôm nay</span>':''}</th>`).join('')}
+    </tr></thead>`;
+
+    const tbody = `<tbody>${rows.map(r=>{
+      const sub = [r.hinh_thuc, r.ghi_chu].filter(Boolean).join(' · ');
+      const cells = THU_COLS.map(d=>{
+        const raw = (r[d.key]||'').trim();
+        const cls = d.v===today ? 'today-col' : '';
+        if(!raw) return `<td class="${cls} empty-cell">—</td>`;
+        const [mon, ...rest] = raw.split(/\r?\n/);
+        const gv = rest.join(' ').trim();
+        return `<td class="${cls}"><div class="slot"><b>${mon}</b>${gv?`<span>${gv}</span>`:''}</div></td>`;
+      }).join('');
+      return `<tr><td class="ca-col">${r.ca||''}${sub?`<span class="ca-sub">${sub}</span>`:''}</td>${cells}</tr>`;
+    }).join('')}</tbody>`;
+
+    table.innerHTML = thead + tbody;
+  }
+
+  renderClassLinks(classObj);
+}
+
+function renderClassLinks(classObj){
+  const wrap = document.getElementById('classLinkGroups');
+  if(!classObj){ wrap.innerHTML=''; return; }
+  const rows = DATA.lopLink.filter(l => classKey(l.ma_lop)===classKey(classObj.ma_lop) || (l.ma_lop||'').toUpperCase()==='ALL');
+  if(!rows.length){ wrap.innerHTML=''; return; }
+
+  // gộp theo nhóm, giữ thứ tự xuất hiện
+  const groups = [];
+  const seen = {};
+  rows.forEach(r=>{
+    const key = r.nhom || 'Khác';
+    if(!seen[key]){ seen[key] = { nhom:key, items:[] }; groups.push(seen[key]); }
+    seen[key].items.push(r);
+  });
+
+  wrap.innerHTML = groups.map(g=>`
+    <div>
+      <div class="link-group-title">${g.nhom}</div>
+      <div class="link-grid">
+        ${g.items.sort(sortByThuTu).map(l=>{
+          const ok = hasLink(l.link);
+          return `<a class="card link-card ${ok?'':'disabled'}" href="${ok?l.link:'#'}" target="_blank" rel="noopener">
+            <div class="doc-icon">${l.icon || iconForNhom(l.nhom)}</div>
+            <div class="doc-text"><h4>${l.tieu_de||''}</h4>${ok?'':'<p>Đang cập nhật</p>'}</div>
+          </a>`;
+        }).join('')}
+      </div>
+    </div>`).join('');
+}
+
+/* Khởi động: ưu tiên khóa trong URL (?khoa=bca) -> khóa đã lưu trong trình duyệt
+   -> nếu chưa có gì thì hiện màn chọn khóa. */
+renderPicker();
+const khoaKhoiDong = urlCourse() || savedCourse();
+if(khoaKhoiDong){ chonKhoa(khoaKhoiDong); } else { moManHinhChonKhoa(); }
+</script>
+</body>
+</html>
