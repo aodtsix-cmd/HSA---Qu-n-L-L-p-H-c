@@ -407,6 +407,22 @@
   .course-switch:hover{background:rgba(255,255,255,.22);}
 
   /* ============================================================
+     12j. CỬA SỔ NHÚNG FORM / TRA CỨU (cột dung_link_rieng = TRUE)
+     ============================================================ */
+  .embed-modal{position:fixed;inset:0;z-index:1000;background:rgba(10,20,15,.55);
+    display:flex;align-items:center;justify-content:center;padding:16px;}
+  .embed-modal[hidden]{display:none!important;}
+  .embed-box{background:#fff;border-radius:var(--radius-lg);width:100%;max-width:720px;height:min(92vh,900px);
+    display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+  .embed-head{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);}
+  .embed-head h4{margin:0;font-size:15px;color:var(--green-900);flex:1;}
+  .embed-head a{font-size:12.5px;color:var(--green-700);font-weight:600;}
+  .embed-close{border:none;background:var(--green-050);border-radius:999px;width:34px;height:34px;font-size:18px;color:var(--ink);}
+  .embed-frame{flex:1;border:0;width:100%;background:#f4f6f5;}
+  .embed-loading{padding:10px 16px;font-size:12.5px;color:var(--ink-soft);}
+  @media (max-width:600px){ .embed-modal{padding:0;} .embed-box{height:100vh;border-radius:0;max-width:none;} }
+
+  /* ============================================================
      13. RESPONSIVE
      ============================================================ */
   @media (max-width:860px){
@@ -623,6 +639,18 @@
   </div>
 </section>
 
+<div class="embed-modal" id="embedModal" hidden role="dialog" aria-modal="true" aria-labelledby="embedTitle">
+  <div class="embed-box">
+    <div class="embed-head">
+      <h4 id="embedTitle">Gửi yêu cầu</h4>
+      <a id="embedNewTab" href="#" target="_blank" rel="noopener">Mở trong tab mới ↗</a>
+      <button class="embed-close" id="embedClose" aria-label="Đóng">✕</button>
+    </div>
+    <div class="embed-loading" id="embedLoading">Đang tải… (lần đầu có thể mất vài giây)</div>
+    <iframe class="embed-frame" id="embedFrame" title="Form hỗ trợ" allow="clipboard-write"></iframe>
+  </div>
+</div>
+
 <footer>
   <div class="wrap">
     <div>
@@ -735,6 +763,8 @@ function renderPicker(){
     card.onclick = ()=> chonKhoa(card.dataset.c);
   });
   document.getElementById('btnDoiKhoa').onclick = (e)=>{ e.preventDefault(); moManHinhChonKhoa(); };
+  document.getElementById('embedClose').onclick = dongCuaSoNhung;
+  document.getElementById('embedModal').onclick = (e)=>{ if(e.target.id==='embedModal') dongCuaSoNhung(); };
 }
 
 function sheetCsvUrl(tab){
@@ -886,6 +916,40 @@ function appendChuongTrinh(url){
   const sep = url.indexOf('?')>-1 ? '&' : '?';
   return `${url}${sep}entry.${entryId}=${encodeURIComponent(khoa)}`;
 }
+/* Mở NGAY TRÊN WEB (cửa sổ nhúng) khi mục báo lỗi có dung_link_rieng = TRUE VÀ link là
+   1 Web App Apps Script (dạng .../macros/s/<mã>/exec — VD hệ thống khóa tài khoản).
+   Khi đó tự gắn ?trang=form|tracuu&khoa=BCA|HSA|QDA.
+   Link loại khác (Google Form, Google Doc...) vẫn mở tab mới như cũ, kể cả khi
+   dung_link_rieng = TRUE (VD mục "Hỏi bài" đang dùng cột này với nghĩa "link riêng"). */
+function laLinkRieng(f){ return String(f.dung_link_rieng||'').trim().toUpperCase()==='TRUE'; }
+function laWebAppNhung(f, url){ return laLinkRieng(f) && /\/macros\/s\/[^\/?#]+\/exec/.test(String(url||'')); }
+function ganThamSo(url, trang){
+  try{
+    const u = new URL(String(url).trim());
+    u.searchParams.set('trang', trang);
+    u.searchParams.set('khoa', (COURSES[currentCourse] || COURSES.bca).code);
+    return u.toString();
+  }catch(e){ return url; }
+}
+function moCuaSoNhung(url, tieuDe){
+  const modal = document.getElementById('embedModal');
+  const frame = document.getElementById('embedFrame');
+  const loading = document.getElementById('embedLoading');
+  document.getElementById('embedTitle').textContent = tieuDe;
+  document.getElementById('embedNewTab').href = url;
+  loading.hidden = false;
+  frame.onload = ()=>{ loading.hidden = true; };
+  frame.src = url;
+  modal.hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+function dongCuaSoNhung(){
+  const modal = document.getElementById('embedModal');
+  modal.hidden = true;
+  document.getElementById('embedFrame').src = 'about:blank';
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') dongCuaSoNhung(); });
 function sortByThuTu(a,b){ return (parseFloat(a.thu_tu)||0) - (parseFloat(b.thu_tu)||0); }
 function initials(name){ return (name||"?").trim().split(/\s+/).slice(-2).map(w=>w[0]).join("").toUpperCase(); }
 function iconForNhom(n){
@@ -1230,8 +1294,12 @@ function renderForms(){
 
   grid.innerHTML = rows.map(f=>{
     const okForm = hasLink(f.link_form);
-    const formUrl = okForm ? appendChuongTrinh(f.link_form) : '#';
     const okTra  = hasLink(f.link_tra_cuu);
+    const nhungForm = okForm && laWebAppNhung(f, f.link_form);
+    const nhungTra  = okTra && laWebAppNhung(f, f.link_tra_cuu);
+    const formUrl = !okForm ? '#' : (nhungForm ? ganThamSo(f.link_form, 'form') : appendChuongTrinh(f.link_form));
+    const traUrl  = !okTra ? '#' : (nhungTra ? ganThamSo(f.link_tra_cuu, 'tracuu') : f.link_tra_cuu);
+    const tieuDeAttr = ` data-tieude="${String(f.tieu_de||'').replace(/"/g,'&quot;')}"`;
     return `
     <div class="card issue-card">
       <div class="issue-top">
@@ -1247,13 +1315,21 @@ function renderForms(){
         ${f.thoi_gian_xu_ly?`<span>⏱ Xử lý: <b>${f.thoi_gian_xu_ly}</b></span>`:''}
       </div>
       <div class="issue-actions">
-        <a class="issue-btn ${okForm?'':'disabled'}" href="${formUrl}" target="_blank" rel="noopener">
+        <a class="issue-btn ${okForm?'':'disabled'}" href="${formUrl}" target="_blank" rel="noopener"${nhungForm?' data-nhung="1"'+tieuDeAttr:''} data-loai="form">
           ${okForm?'📮 Gửi yêu cầu':'Đang cập nhật form'}
         </a>
-        ${okTra?`<a class="issue-btn ghost" href="${f.link_tra_cuu}" target="_blank" rel="noopener">🔍 Tra cứu kết quả</a>`:''}
+        ${okTra?`<a class="issue-btn ghost" href="${traUrl}" target="_blank" rel="noopener"${nhungTra?' data-nhung="1"'+tieuDeAttr:''} data-loai="tracuu">🔍 Tra cứu kết quả</a>`:''}
       </div>
     </div>`;
   }).join('');
+
+  grid.querySelectorAll('a[data-nhung="1"]').forEach(a=>{
+    a.addEventListener('click', (e)=>{
+      e.preventDefault();
+      const tieuDe = (a.dataset.loai==='form' ? 'Gửi yêu cầu: ' : 'Tra cứu: ') + (a.dataset.tieude||'');
+      moCuaSoNhung(a.href, tieuDe);
+    });
+  });
 }
 
 /* ---------- CHỌN LỚP ---------- */
