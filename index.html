@@ -1009,7 +1009,34 @@ function boDongChan(rows){
    (TH01 - 2K9 / TH01-2K9 / th01–2k9 đều được coi là cùng 1 lớp). Chỉ dùng để SO KHỚP,
    không dùng để hiển thị — hiển thị vẫn lấy nguyên ma_lop gốc. */
 function classKey(v){
-  return normId(v).toLowerCase().replace(/\s+/g,'').replace(/[\u2010-\u2015]/g,'-');
+  // chỉ giữ chữ + số: "NT02 - 2K10" = "NT02-2K10" = "nt02.2k10" = "NT02 – 2K10"
+  return normId(v).normalize('NFC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
+}
+/* Tab Lop: bỏ dòng quên điền ma_lop, bỏ dòng dán trùng mã (giữ dòng đầu). */
+function locLop(rows){
+  const daCo = new Set();
+  return rows.filter(r=>{ const k = classKey(r.ma_lop); if(!k || daCo.has(k)) return false; daCo.add(k); return true; });
+}
+/* Tab TKB: ô ma_lop bị GỘP (merge) hoặc để trống ở dòng ca thứ 2 -> dùng mã lớp của dòng ngay trên. */
+function dienMaLopTKB(rows){
+  let truoc = '';
+  rows.forEach(r=>{
+    const ma = normId(r.ma_lop);
+    const coNoiDung = normId(r.ca) || THU_COLS.some(d=>normId(r[d.key]));
+    if(ma) truoc = ma; else if(coNoiDung && truoc) r.ma_lop = truoc;
+  });
+  return rows;
+}
+/* Sắp xếp ca: theo thu_tu; ô thu_tu trống -> theo giờ bắt đầu ghi ở cột ca (20h00, 20:00, 8h...). */
+function gioBatDau(ca){
+  const m = String(ca||'').match(/(\d{1,2})\s*[h:gG]\s*(\d{0,2})/);
+  return m ? (+m[1])*60 + (+(m[2]||0)) : 99999;
+}
+function sapXepCa(rows){
+  const so = v => { const n = parseFloat(v); return isNaN(n) ? Infinity : n; };
+  return rows.map((r,i)=>({r,i})).sort((a,b)=>
+    (so(a.r.thu_tu)-so(b.r.thu_tu)) || (gioBatDau(a.r.ca)-gioBatDau(b.r.ca)) || (a.i-b.i)
+  ).map(x=>x.r);
 }
 function hasLink(v){ return !!(v && String(v).trim() && String(v).trim()!=="#"); }
 /* Gắn sẵn "Chương trình bạn đang học" vào link Google Form dựa theo khóa
@@ -1162,7 +1189,7 @@ async function loadAll(){
                       .filter(r=>String(r.chuong_trinh||'').trim().toUpperCase()===khoaHienTai)
                       .sort(sortByThuTu);
     DATA.lopLink  = pick(lopLink, SAMPLE_DATA.lopLink).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
-    DATA.tkb      = pick(tkb, SAMPLE_DATA.tkb);
+    DATA.tkb      = dienMaLopTKB(pick(tkb, SAMPLE_DATA.tkb));
     DATA.quanLy   = pick(quanLy, SAMPLE_DATA.quanLy).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
     // 2 tab mới: chưa tạo thì coi như trống (không báo lỗi), HoiDap dùng danh sách mẫu "Sắp mở"
     DATA.troGiang = lamSach(troGiang.ok ? troGiang.data : []).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
@@ -1174,7 +1201,7 @@ async function loadAll(){
     DATA.form     = pick(form, SAMPLE_DATA.form).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
 
     cleanMaLop(DATA.lop); cleanMaLop(DATA.lopLink); cleanMaLop(DATA.tkb);
-    DATA.lop = boDongChan(DATA.lop);
+    DATA.lop = locLop(boDongChan(DATA.lop));
     DATA.lopLink = boDongChan(DATA.lopLink);
     DATA.tkb = boDongChan(DATA.tkb);
 
@@ -1564,7 +1591,7 @@ function renderClassDetail(){
   const classObj = DATA.lop.find(l=>classKey(l.ma_lop)===selectedClass);
   document.getElementById('tkbTitle').innerHTML = classObj ? `Thông tin ${classObj.ten_hien_thi}` : 'Thông tin lớp';   // dữ liệu đã được làm sạch
 
-  const rows = DATA.tkb.filter(r=>classKey(r.ma_lop)===selectedClass).sort(sortByThuTu);
+  const rows = sapXepCa(DATA.tkb.filter(r=>classKey(r.ma_lop)===selectedClass));
   const table = document.getElementById('tkbTable');
   const empty = document.getElementById('tkbEmpty');
   const today = todayThuValue();
