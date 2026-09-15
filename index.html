@@ -1364,17 +1364,21 @@ function splitDuties(v){
 function renderTeam(){
   const filterBar = document.getElementById('teamFilter');
   const grid = document.getElementById('staffGrid');
-  if(!DATA.quanLy.length){
+  // cột khoa: trống / ALL = quản lý chung mọi khóa; hoặc "BCA", "BCA, HSA"...
+  const dsKhoa = DATA.quanLy.filter(t=>hopKhoa(t.khoa));
+  document.getElementById('statTro').textContent = dsKhoa.length;
+  if(!dsKhoa.length){
     filterBar.innerHTML = '';
     grid.innerHTML = `<div class="tkb-empty form-empty">Chưa có thông tin đội ngũ quản lý.</div>`;
     return;
   }
   // chip lọc TỰ SINH từ cột nhom_loc trong Sheet — thêm nhóm mới ở Sheet là chip tự xuất hiện
   const groups = [];
-  DATA.quanLy.forEach(t=>{
+  dsKhoa.forEach(t=>{
     const g = (t.nhom_loc||'').trim();
     if(g && !groups.includes(g)) groups.push(g);
   });
+  if(teamFilterState!=='tat_ca' && !groups.includes(teamFilterState)) teamFilterState = 'tat_ca';   // đổi khóa mà nhóm cũ không còn
   filterBar.innerHTML =
     `<button class="filter-btn ${teamFilterState==='tat_ca'?'active':''}" data-f="tat_ca">Tất cả</button>` +
     groups.map(g=>`<button class="filter-btn ${teamFilterState===g?'active':''}" data-f="${g}">${g}</button>`).join('');
@@ -1383,8 +1387,8 @@ function renderTeam(){
   });
 
   const rows = teamFilterState==='tat_ca'
-    ? DATA.quanLy
-    : DATA.quanLy.filter(t=>(t.nhom_loc||'').trim()===teamFilterState);
+    ? dsKhoa
+    : dsKhoa.filter(t=>(t.nhom_loc||'').trim()===teamFilterState);
 
   if(!rows.length){
     grid.innerHTML = `<div class="tkb-empty form-empty">Chưa có ai trong nhóm này.</div>`;
@@ -1575,8 +1579,7 @@ function renderClassPicker(){
   });
 
   document.getElementById('statLop').textContent = DATA.lop.length;
-  document.getElementById('statTro').textContent = DATA.quanLy.length;
-
+  
   renderClassDetail();
 }
 
