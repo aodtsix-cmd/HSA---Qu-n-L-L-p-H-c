@@ -241,6 +241,29 @@
   .link-card.disabled{opacity:.55;pointer-events:none;}
   .link-card.disabled .doc-icon{background:#c8d2cc;}
 
+  /* Hỏi đáp theo môn (nhóm Facebook) */
+  .qa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;}
+  .qa-card{padding:18px;display:flex;flex-direction:column;gap:10px;}
+  .qa-top{display:flex;align-items:center;gap:12px;}
+  .qa-top .doc-icon{background:var(--green-700);color:#fff;}
+  .qa-card h4{margin:0;font-size:15.5px;color:var(--green-900);font-family:'Be Vietnam Pro';}
+  .qa-card .qa-mon{margin:2px 0 0;font-size:12.5px;color:var(--ink-soft);}
+  .qa-note{margin:0;font-size:13px;color:var(--ink-soft);line-height:1.5;}
+  .qa-ta{margin:0;font-size:12.5px;color:var(--ink);}
+  .qa-ta b{color:var(--green-800);}
+  .qa-btn{margin-top:auto;display:block;text-align:center;padding:10px 12px;border-radius:10px;background:var(--green-700);color:#fff;font-weight:700;font-size:13.5px;text-decoration:none;}
+  .qa-btn.off{background:#dfe5e1;color:#6b7a72;pointer-events:none;}
+  @media (max-width:700px){
+    .qa-grid{grid-template-columns:1fr 1fr;gap:8px;}
+    .qa-card{padding:12px;gap:6px;}
+    .qa-top{gap:8px;}
+    .qa-top .doc-icon{width:32px;height:32px;font-size:15px;border-radius:9px;}
+    .qa-card h4{font-size:13.5px;line-height:1.3;}
+    .qa-card .qa-mon,.qa-note{display:none;}
+    .qa-ta{font-size:11.5px;}
+    .qa-btn{padding:7px 8px;font-size:12px;}
+  }
+
   /* ============================================================
      12. FOOTER
      ============================================================ */
@@ -511,10 +534,10 @@
     <div>
       <span class="eyebrow">★ Đánh giá năng lực – Tuyển sinh Bộ Công An 2027</span>
       <h1 class="hero-title">Mọi thông tin lớp học <span class="accent">gọn trong một trang</span></h1>
-      <p class="hero-desc">Lịch học theo tuần, cách xử lý sự cố ClassIn, đầu mối liên hệ trợ giảng, tài liệu và video hướng dẫn — luôn cập nhật mới nhất, không cần dò lại tin nhắn Zalo.</p>
+      <p class="hero-desc">Lịch học theo tuần, nhóm hỏi đáp bài học theo môn, cách xử lý sự cố ClassIn, đầu mối quản lý lớp, tài liệu và video hướng dẫn — luôn cập nhật mới nhất, không cần dò lại tin nhắn Zalo.</p>
       <div class="hero-stats" id="heroStats">
         <div class="hero-stat"><b id="statLop">–</b><span>Lớp đang mở</span></div>
-        <div class="hero-stat"><b id="statTro">–</b><span>Người hỗ trợ vận hành</span></div>
+        <div class="hero-stat"><b id="statTro">–</b><span>Quản lý &amp; vận hành</span></div>
         <div class="hero-stat"><b>90 phút</b><span>Mỗi buổi học</span></div>
       </div>
     </div>
@@ -523,6 +546,7 @@
       <p>Chọn nhanh việc cần làm, hệ thống dẫn tới đúng phần bên dưới.</p>
       <div class="hero-card-list">
         <a class="hero-card-row" href="#lich-hoc"><span>📅 Xem lịch học tuần này</span><span class="pill">Đi tới</span></a>
+        <a class="hero-card-row" href="#hoi-dap"><span>🙋 Hỏi bài theo môn</span><span class="pill">Đi tới</span></a>
         <a class="hero-card-row" href="#xu-ly-su-co"><span>🛠 Xem hướng dẫn từng bước</span><span class="pill muted">Bước 1</span></a>
         <a class="hero-card-row" href="#bao-loi"><span>📮 Báo lỗi / gửi yêu cầu</span><span class="pill orange">Bước 2</span></a>
         <a class="hero-card-row" href="#quy-tac"><span>📋 Quy tắc học trên ClassIn</span><span class="pill muted">Đi tới</span></a>
@@ -554,6 +578,18 @@
 
       <div class="link-groups" id="classLinkGroups"></div>
     </div>
+  </div>
+</section>
+
+<!-- ================= HỎI ĐÁP THEO MÔN (nhóm Facebook) ================= -->
+<section class="section" id="hoi-dap" style="background:var(--green-050)">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">🙋 Không hiểu bài?</span>
+      <h2 class="section-title">Hỏi đáp bài học theo môn</h2>
+      <p class="section-sub">Vào đúng nhóm môn để đặt câu hỏi — trợ giảng của môn đó sẽ trả lời ngay trong nhóm.<br>Nhóm này chỉ dùng để hỏi bài. Lỗi tài khoản, ClassIn, sách… hãy gửi ở mục <a href="#bao-loi">Báo lỗi</a>.</p>
+    </div>
+    <div class="qa-grid" id="qaGrid"></div>
   </div>
 </section>
 
@@ -591,8 +627,8 @@
         <a class="flow-step b3" href="#doi-ngu">
           <div class="flow-num">3</div>
           <h4>Việc gấp trong buổi học → Nhắn trực tiếp</h4>
-          <p>Chỉ dùng khi cần gấp (VD đang giờ học mà không vào được lớp). Xem phần việc từng người để nhắn đúng đầu mối.</p>
-          <div class="flow-go">Xem đầu mối →</div>
+          <p>Chỉ dùng khi cần gấp (VD đang giờ học mà không vào được lớp). Xem phần việc từng quản lý để nhắn đúng người.</p>
+          <div class="flow-go">Xem đội ngũ quản lý →</div>
         </a>
       </div>
     </div>
@@ -628,12 +664,12 @@
   </div>
 </section>
 
-<!-- ================= ĐỘI NGŨ HỖ TRỢ ================= -->
+<!-- ================= ĐỘI NGŨ QUẢN LÝ (tab QuanLy) ================= -->
 <section class="section" id="doi-ngu" style="background:var(--green-050)">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">🎧 BƯỚC 3 — Chỉ dùng khi gấp</span>
-      <h2 class="section-title">Bộ phận quản lý lớp &amp; vận hành</h2>
+      <h2 class="section-title">Đội ngũ quản lý lớp &amp; vận hành</h2>
       <p class="section-sub"><b>Dùng khi:</b> việc gấp trong buổi học, hoặc đã gửi yêu cầu ở Bước 2 quá lâu chưa được xử lý.<br>Xem phần việc của từng người để nhắn đúng đầu mối — nhắn sai người sẽ bị chuyển qua lại, chậm hơn.</p>
     </div>
     <div class="team-filter" id="teamFilter"></div>
@@ -699,7 +735,8 @@
    ================================================================
    1. Tạo 1 Google Sheet (khuyên dùng: import file mau-du-lieu-HSA.xlsx)
       với đủ 7 tab tên chính xác:
-      Lop | LopLink | TKB | TroGiang | Video | TaiLieu | HoTro
+      Lop | LopLink | TKB | QuanLy | TroGiang | HoiDap | Video | TaiLieu | HoTro | QuyTac | Form
+      (QuanLy = đội ngũ quản lý · HoiDap = nhóm hỏi đáp theo môn · TroGiang = trợ giảng từng môn)
    2. Share > General access > "Anyone with the link" > Viewer
    3. Copy Sheet ID trong URL (đoạn giữa /d/ và /edit) và dán vào bên dưới.
    Xem hướng dẫn đầy đủ trong file HUONG-DAN-SU-DUNG.md
@@ -707,7 +744,8 @@
 const CONFIG = {
   SHEET_ID: "1SrASjzgLM2rIasjqW0D1Yoog5RzrAE4ubhlYV9sf1GY", // <-- 1 Sheet DUY NHẤT dùng chung cho cả 3 khóa
   TABS: {
-    lop:"Lop", lopLink:"LopLink", tkb:"TKB", troGiang:"TroGiang",
+    lop:"Lop", lopLink:"LopLink", tkb:"TKB",
+    quanLy:"QuanLy", troGiang:"TroGiang", hoiDap:"HoiDap",
     video:"Video", taiLieu:"TaiLieu", hoTro:"HoTro",
     quyTac:"QuyTac", form:"Form",
   },
@@ -854,7 +892,16 @@ const SAMPLE_DATA = {
     {"ma_lop":"QDA02 - 2K9","ca":"20h00 - 21h30","Thu2":"Vật lý\nCô Hải Yến","Thu3":"Sinh Học\nCô Dung","Thu4":"","Thu5":"Lịch Sử\nCô Hiền","Thu6":"Hóa Học\nThầy Văn Bình","Thu7":"","CN":"Địa Lý\nCô Phương","hinh_thuc":"ClassIn","ghi_chu":"","thu_tu":"1"},
     {"ma_lop":"QDA02 - 2K9","ca":"21h35 - 23h05","Thu2":"Văn\nThầy Hải Linh","Thu3":"Tiếng Anh\nThầy Đức","Thu4":"Toán Hình\nCô Trinh","Thu5":"","Thu6":"","Thu7":"Toán Đại\nThầy Thắng","CN":"","hinh_thuc":"","ghi_chu":"","thu_tu":""}
   ],
-  troGiang: [
+  // Nhóm hỏi đáp theo môn — link để trống thì nút hiện "Sắp mở"
+  hoiDap: [
+    {"khoa":"ALL","to_hop":"Toán","ten_nhom":"Hỏi đáp Toán","mon":"Toán Đại · Toán Hình · Xử lý số liệu","link_nhom":"","icon":"📐","ghi_chu":"","thu_tu":"1","hien_thi":"TRUE"},
+    {"khoa":"ALL","to_hop":"Văn","ten_nhom":"Hỏi đáp Văn","mon":"Ngữ văn · Văn học – Ngôn ngữ","link_nhom":"","icon":"📖","ghi_chu":"","thu_tu":"2","hien_thi":"TRUE"},
+    {"khoa":"ALL","to_hop":"KHTN","ten_nhom":"Hỏi đáp KHTN","mon":"Vật lý · Hóa học · Sinh học","link_nhom":"","icon":"🔬","ghi_chu":"","thu_tu":"3","hien_thi":"TRUE"},
+    {"khoa":"ALL","to_hop":"KHXH","ten_nhom":"Hỏi đáp KHXH","mon":"Lịch sử · Địa lý","link_nhom":"","icon":"🌏","ghi_chu":"","thu_tu":"4","hien_thi":"TRUE"},
+    {"khoa":"ALL","to_hop":"Tiếng Anh","ten_nhom":"Hỏi đáp Tiếng Anh","mon":"Tiếng Anh","link_nhom":"","icon":"🔤","ghi_chu":"","thu_tu":"5","hien_thi":"TRUE"}
+  ],
+  troGiang: [],
+  quanLy: [
     {"ho_ten":"Đinh Thị Phúc","chuc_vu":"Trưởng bộ phận","nhom_loc":"Quản lý chung","sdt":"0943114865","zalo_link":"","nhiem_vu":"Quản lý chung hoạt động vận hành lớp học.\nTiếp nhận phản ánh về chất lượng nhân sự và hoạt động lớp.\nHỗ trợ kiểm tra, theo dõi tình hình học tập của học sinh.","thu_tu":"1","hien_thi":"TRUE"},
     {"ho_ten":"Nguyễn Phúc Thanh","chuc_vu":"Lead Team","nhom_loc":"Website & Tài khoản","sdt":"0384409051","zalo_link":"","nhiem_vu":"Hỗ trợ website: mã kích hoạt, tài khoản, mật khẩu.\nSắp xếp thời khóa biểu các lớp.\nTổng hợp báo cáo tình hình hoạt động lớp học.","thu_tu":"2","hien_thi":"TRUE"},
     {"ho_ten":"Hoàng Tiến Minh","chuc_vu":"Quản lý lớp","nhom_loc":"Lớp học & Hỗ trợ","sdt":"0936685333","zalo_link":"","nhiem_vu":"Quản lý và hỗ trợ hoạt động lớp học.\nGiải đáp các thắc mắc chung trong nhóm hỏi đáp.\nHỗ trợ kiểm tra và cung cấp tài liệu học tập.\nMở lớp ClassIn và hỗ trợ học sinh trong suốt buổi học.","thu_tu":"3","hien_thi":"TRUE"},
@@ -1082,7 +1129,7 @@ async function fetchTab(tab){
 /* ================================================================
    TẢI DỮ LIỆU + RENDER
 ================================================================= */
-let DATA = { lop:[], lopLink:[], tkb:[], troGiang:[], video:[], taiLieu:[], hoTro:[], quyTac:[], form:[] };
+let DATA = { lop:[], lopLink:[], tkb:[], quanLy:[], troGiang:[], hoiDap:[], video:[], taiLieu:[], hoTro:[], quyTac:[], form:[] };
 let selectedClass = null;
 let teamFilterState = "tat_ca";
 let formFilterState = "tat_ca";
@@ -1092,11 +1139,19 @@ async function loadAll(){
   const syncText = document.getElementById('syncText');
   const syncDot = document.getElementById('syncDot');
   try{
-    const [lop, lopLink, tkb, troGiang, video, taiLieu, hoTro, quyTac, form] = await Promise.all([
+    const [lop, lopLink, tkb, quanLyRaw, troGiangRaw, hoiDapRaw, video, taiLieu, hoTro, quyTac, form] = await Promise.all([
       fetchTab(CONFIG.TABS.lop), fetchTab(CONFIG.TABS.lopLink), fetchTab(CONFIG.TABS.tkb),
-      fetchTab(CONFIG.TABS.troGiang), fetchTab(CONFIG.TABS.video), fetchTab(CONFIG.TABS.taiLieu),
+      fetchTab(CONFIG.TABS.quanLy), fetchTab(CONFIG.TABS.troGiang), fetchTab(CONFIG.TABS.hoiDap),
+      fetchTab(CONFIG.TABS.video), fetchTab(CONFIG.TABS.taiLieu),
       fetchTab(CONFIG.TABS.hoTro), fetchTab(CONFIG.TABS.quyTac), fetchTab(CONFIG.TABS.form),
     ]);
+    // Google trả về TAB ĐẦU TIÊN khi tên tab không tồn tại -> kiểm tra đúng cột trước khi dùng.
+    const dungCot = (res, cot)=> (res.ok && (!res.data.length || cot.every(c=>c in res.data[0]))) ? res : {ok:false, data:null};
+    // Đội ngũ quản lý: tab QuanLy. Chưa đổi tên tab thì đọc tab TroGiang kiểu cũ (có cột chuc_vu).
+    let quanLy = dungCot(quanLyRaw, ['ho_ten','chuc_vu']);
+    if(!quanLy.ok){ const cu = dungCot(troGiangRaw, ['ho_ten','chuc_vu']); if(cu.ok && cu.data.length) quanLy = cu; }
+    const troGiang = dungCot(troGiangRaw, ['ho_ten','to_hop']);
+    const hoiDap = dungCot(hoiDapRaw, ['ten_nhom','link_nhom']);
     // dùng dữ liệu mẫu khi: chưa cấu hình Sheet, HOẶC tải thật sự lỗi.
     // Nếu tải THÀNH CÔNG nhưng tab đang trống (VD TaiLieu chưa ai điền) thì hiển thị
     // đúng trạng thái RỖNG THẬT, không âm thầm thay bằng dữ liệu mẫu giả.
@@ -1108,7 +1163,10 @@ async function loadAll(){
                       .sort(sortByThuTu);
     DATA.lopLink  = pick(lopLink, SAMPLE_DATA.lopLink).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
     DATA.tkb      = pick(tkb, SAMPLE_DATA.tkb);
-    DATA.troGiang = pick(troGiang, SAMPLE_DATA.troGiang).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
+    DATA.quanLy   = pick(quanLy, SAMPLE_DATA.quanLy).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
+    // 2 tab mới: chưa tạo thì coi như trống (không báo lỗi), HoiDap dùng danh sách mẫu "Sắp mở"
+    DATA.troGiang = lamSach(troGiang.ok ? troGiang.data : []).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
+    DATA.hoiDap   = lamSach(hoiDap.ok ? hoiDap.data : SAMPLE_DATA.hoiDap).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
     DATA.video    = pick(video, SAMPLE_DATA.video).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
     DATA.taiLieu  = pick(taiLieu, SAMPLE_DATA.taiLieu).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
     DATA.hoTro    = pick(hoTro, SAMPLE_DATA.hoTro).filter(r=>truthy(r.hien_thi));
@@ -1122,7 +1180,7 @@ async function loadAll(){
 
     const anyTabConfigured = Object.values(CONFIG.TABS).some(tabConfigured);
     const notConfigured = !CONFIG.SHEET_ID || CONFIG.SHEET_ID.indexOf("DAN_SHEET_ID")===0 || !anyTabConfigured;
-    const tabResults = { Lop:lop, LopLink:lopLink, TKB:tkb, TroGiang:troGiang, Video:video, TaiLieu:taiLieu, HoTro:hoTro, QuyTac:quyTac, Form:form };
+    const tabResults = { Lop:lop, LopLink:lopLink, TKB:tkb, QuanLy:quanLy, Video:video, TaiLieu:taiLieu, HoTro:hoTro, QuyTac:quyTac, Form:form };
     const failedTabs = Object.keys(tabResults).filter(k=>!tabResults[k].ok);
 
     if(notConfigured){
@@ -1151,6 +1209,7 @@ async function loadAll(){
   renderFaq();
   renderDocs();
   renderTeam();
+  renderHoiDap();
   renderClassPicker();
 }
 
@@ -1241,21 +1300,51 @@ function renderDocs(){
     </a>`).join('');
 }
 
-/* ---------- NHÂN SỰ VẬN HÀNH ---------- */
+/* ---------- HỎI ĐÁP THEO MÔN (tab HoiDap + tab TroGiang) ---------- */
+function chuanTen(v){ return String(v||'').normalize('NFC').trim().toLowerCase().replace(/\s+/g,' '); }
+function hopKhoa(v){
+  // cột khoa: trống / ALL = mọi khóa; hoặc ghi 1 hay nhiều mã, VD "BCA, QDA"
+  const ds = String(v||'').toUpperCase().split(/[,;\/]/).map(x=>x.trim()).filter(Boolean);
+  const ma = (COURSES[currentCourse] || COURSES.bca).code;
+  return !ds.length || ds.includes('ALL') || ds.includes('TẤT CẢ') || ds.includes(ma);
+}
+function renderHoiDap(){
+  const grid = document.getElementById('qaGrid');
+  const nhom = DATA.hoiDap.filter(r=>hopKhoa(r.khoa));
+  if(!nhom.length){ grid.innerHTML = `<div class="tkb-empty" style="grid-column:1/-1;">Chưa có nhóm hỏi đáp nào.</div>`; return; }
+  const tro = DATA.troGiang.filter(t=>hopKhoa(t.khoa));
+  grid.innerHTML = nhom.map(n=>{
+    const khoaNhom = chuanTen(n.to_hop || n.ten_nhom);
+    const ten = tro.filter(t=>chuanTen(t.to_hop)===khoaNhom).map(t=>t.ho_ten).filter(Boolean);
+    const co = hasLink(n.link_nhom);
+    return `
+    <div class="card qa-card">
+      <div class="qa-top">
+        <div class="doc-icon">${n.icon||'💬'}</div>
+        <div><h4>${n.ten_nhom||n.to_hop||''}</h4>${n.mon?`<p class="qa-mon">${n.mon}</p>`:''}</div>
+      </div>
+      ${n.ghi_chu?`<p class="qa-note">${n.ghi_chu}</p>`:''}
+      ${ten.length?`<p class="qa-ta"><b>Trợ giảng:</b> ${ten.join(', ')}</p>`:''}
+      ${co?`<a class="qa-btn" href="${n.link_nhom}" target="_blank" rel="noopener">Vào nhóm<span class="an-dt"> hỏi đáp</span> →</a>`:`<span class="qa-btn off">Sắp mở</span>`}
+    </div>`;
+  }).join('');
+}
+
+/* ---------- ĐỘI NGŨ QUẢN LÝ (tab QuanLy) ---------- */
 function splitDuties(v){
   return String(v||'').split(/\r?\n|;/).map(s=>s.trim()).filter(Boolean);
 }
 function renderTeam(){
   const filterBar = document.getElementById('teamFilter');
   const grid = document.getElementById('staffGrid');
-  if(!DATA.troGiang.length){
+  if(!DATA.quanLy.length){
     filterBar.innerHTML = '';
-    grid.innerHTML = `<div class="tkb-empty form-empty">Chưa có thông tin nhân sự.</div>`;
+    grid.innerHTML = `<div class="tkb-empty form-empty">Chưa có thông tin đội ngũ quản lý.</div>`;
     return;
   }
   // chip lọc TỰ SINH từ cột nhom_loc trong Sheet — thêm nhóm mới ở Sheet là chip tự xuất hiện
   const groups = [];
-  DATA.troGiang.forEach(t=>{
+  DATA.quanLy.forEach(t=>{
     const g = (t.nhom_loc||'').trim();
     if(g && !groups.includes(g)) groups.push(g);
   });
@@ -1267,8 +1356,8 @@ function renderTeam(){
   });
 
   const rows = teamFilterState==='tat_ca'
-    ? DATA.troGiang
-    : DATA.troGiang.filter(t=>(t.nhom_loc||'').trim()===teamFilterState);
+    ? DATA.quanLy
+    : DATA.quanLy.filter(t=>(t.nhom_loc||'').trim()===teamFilterState);
 
   if(!rows.length){
     grid.innerHTML = `<div class="tkb-empty form-empty">Chưa có ai trong nhóm này.</div>`;
@@ -1459,7 +1548,7 @@ function renderClassPicker(){
   });
 
   document.getElementById('statLop').textContent = DATA.lop.length;
-  document.getElementById('statTro').textContent = DATA.troGiang.length;
+  document.getElementById('statTro').textContent = DATA.quanLy.length;
 
   renderClassDetail();
 }
