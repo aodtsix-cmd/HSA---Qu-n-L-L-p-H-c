@@ -164,7 +164,11 @@
   }
   .faq-list{display:flex;flex-direction:column;gap:18px;}
   .faq-card{border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-sm);scroll-margin-top:20px;}
-  .faq-head{display:flex;align-items:center;gap:12px;padding:14px 20px;color:#fff;}
+  .faq-head{display:flex;align-items:center;gap:12px;padding:14px 20px;color:#fff;cursor:pointer;list-style:none;}
+  .faq-head::-webkit-details-marker{display:none;}
+  .faq-head::after{content:"▾";margin-left:auto;font-size:14px;opacity:.85;transition:transform .2s;}
+  .faq-card:not([open]) .faq-head::after{transform:rotate(-90deg);}
+  .faq-head:focus-visible{outline:3px solid #fff;outline-offset:-4px;}
   .faq-num{width:26px;height:26px;border-radius:8px;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;}
   .faq-head h4{font-size:15px;letter-spacing:.02em;}
   .faq-body{padding:18px 22px 22px;display:flex;flex-direction:column;gap:8px;background:#fff;}
@@ -183,8 +187,8 @@
   /* ============================================================
      9. ĐỘI NGŨ HỖ TRỢ
      ============================================================ */
-  .team-filter{display:flex;justify-content:center;gap:10px;margin-bottom:22px;}
-  .filter-btn{padding:9px 20px;border-radius:999px;border:1px solid var(--border);background:#fff;font-size:13.5px;font-weight:600;color:var(--ink-soft);}
+  .team-filter{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 10px;margin-bottom:22px;}
+  .filter-btn{white-space:nowrap;flex:0 0 auto;padding:9px 20px;border-radius:999px;border:1px solid var(--border);background:#fff;font-size:13.5px;font-weight:600;color:var(--ink-soft);}
   .filter-btn.active{background:var(--green-700);border-color:var(--green-700);color:#fff;}
   .team-scroll{display:flex;gap:16px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x proximity;}
   .team-card{min-width:220px;scroll-snap-align:start;text-align:center;padding:24px 18px;flex-shrink:0;}
@@ -367,6 +371,28 @@
   .flow-step p{margin:0;font-size:13px;color:var(--ink-soft);line-height:1.55;}
   .flow-step .flow-go{margin-top:auto;padding-top:6px;font-size:12.5px;font-weight:700;color:var(--green-700);}
   @media (max-width:760px){ .flow-grid{grid-template-columns:1fr;} }
+  /* Điện thoại: thu gọn các khối dài để trang không quá dài */
+  @media (max-width:600px){
+    .flow-grid{gap:8px;}
+    .flow-step{flex-direction:row;align-items:center;gap:12px;padding:12px 14px;}
+    .flow-step p,.flow-step .flow-go{display:none;}
+    .flow-step h4{font-size:14px;}
+    .flow-sub{margin-bottom:12px;}
+    .issue-card{padding:14px 16px;gap:8px;}
+    .issue-meta{flex-direction:row;flex-wrap:wrap;gap:2px 12px;}
+    .issue-actions{flex-wrap:nowrap;padding-top:2px;}
+    .issue-actions .issue-btn{flex:1 1 0;justify-content:center;text-align:center;}
+    .staff-card{padding:16px;gap:10px;}
+  }
+  .tkb-hint{display:none;font-size:12px;color:var(--ink-soft);text-align:center;margin:0 0 6px;}
+  @media (max-width:760px){ .tkb-hint{display:block;} }
+  .tkb-hint.an{display:none!important;}
+  @media (max-width:600px){ .an-dt{display:none;} }
+  .staff-more summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--green-700);list-style:none;}
+  .staff-more summary::-webkit-details-marker{display:none;}
+  .staff-more summary::before{content:"▸ ";}
+  .staff-more[open] summary::before{content:"▾ ";}
+  .staff-more[open] summary{margin-bottom:8px;}
 
   /* ============================================================
      12f. MÀN CHỌN KHÓA HỌC (nhiều khóa dùng chung 1 trang)
@@ -488,7 +514,7 @@
       <p class="hero-desc">Lịch học theo tuần, cách xử lý sự cố ClassIn, đầu mối liên hệ trợ giảng, tài liệu và video hướng dẫn — luôn cập nhật mới nhất, không cần dò lại tin nhắn Zalo.</p>
       <div class="hero-stats" id="heroStats">
         <div class="hero-stat"><b id="statLop">–</b><span>Lớp đang mở</span></div>
-        <div class="hero-stat"><b id="statTro">–</b><span>Trợ giảng đồng hành</span></div>
+        <div class="hero-stat"><b id="statTro">–</b><span>Người hỗ trợ vận hành</span></div>
         <div class="hero-stat"><b>90 phút</b><span>Mỗi buổi học</span></div>
       </div>
     </div>
@@ -502,6 +528,44 @@
         <a class="hero-card-row" href="#quy-tac"><span>📋 Quy tắc học trên ClassIn</span><span class="pill muted">Đi tới</span></a>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ================= CHỌN LỚP + TKB ================= -->
+<section class="section" id="lich-hoc">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">🎓 Bạn thuộc lớp nào?</span>
+      <h2 class="section-title">Lịch học của lớp bạn</h2>
+      <p class="section-sub">Chọn đúng lớp — web sẽ nhớ lớp này cho lần sau.</p>
+    </div>
+    <div class="class-grid" id="classGrid"></div>
+
+    <div class="card card-pad" style="margin-top:24px;">
+      <div class="tkb-head">
+        <h3 id="tkbTitle">Thông tin lớp</h3>
+        <div class="sync-note" id="syncNote" style="margin:0;"><span class="dot" id="syncDot"></span><span id="syncText">Đang tải dữ liệu…</span></div>
+      </div>
+      <div class="tkb-hint">← Vuốt ngang bảng để xem cả tuần →</div>
+      <div class="tkb-scroll">
+        <table class="tkb" id="tkbTable" style="display:none;"></table>
+      </div>
+      <div class="tkb-empty" id="tkbEmpty" style="display:none;"></div>
+
+      <div class="link-groups" id="classLinkGroups"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= VIDEO HƯỚNG DẪN ================= -->
+<section class="section" id="video">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">▶ Học sinh mới — xem trước</span>
+      <h2 class="section-title">Video hướng dẫn nhập học</h2>
+      <p class="section-sub">Xem video để nắm quy trình kích hoạt khóa và tham gia lớp học.</p>
+    </div>
+    <div class="video-grid" id="videoGrid"></div>
   </div>
 </section>
 
@@ -535,15 +599,16 @@
   </div>
 </section>
 
-<!-- ================= VIDEO HƯỚNG DẪN ================= -->
-<section class="section" id="video">
+<!-- ================= XỬ LÝ SỰ CỐ (SỔ TAY) ================= -->
+<section class="section" id="xu-ly-su-co" style="background:var(--green-050)">
   <div class="wrap">
     <div class="section-head">
-      <span class="eyebrow">▶ Bắt đầu ở đây</span>
-      <h2 class="section-title">Hướng dẫn nhập học</h2>
-      <p class="section-sub">Xem video để nắm quy trình kích hoạt khóa và tham gia lớp học.</p>
+      <span class="eyebrow">🛠 BƯỚC 1 — Tự làm được ngay</span>
+      <h2 class="section-title">Hướng dẫn từng bước</h2>
+      <p class="section-sub"><b>Dùng khi:</b> bạn cần biết CÁCH LÀM một việc (đăng ký tài khoản, cài ClassIn, vào thi khảo sát…).<br>Đây là phần hướng dẫn — <b>không phải nơi báo lỗi</b>. Làm theo mà vẫn không được thì mới sang Bước 2 để gửi yêu cầu.</p>
     </div>
-    <div class="video-grid" id="videoGrid"></div>
+    <div class="faq-jump" id="faqJump"></div>
+    <div class="faq-list" id="faqList"></div>
   </div>
 </section>
 
@@ -560,33 +625,6 @@
       <div class="form-chips" id="formChips"></div>
     </div>
     <div class="form-grid" id="formGrid"></div>
-  </div>
-</section>
-
-<!-- ================= XỬ LÝ SỰ CỐ (SỔ TAY) ================= -->
-<section class="section" id="xu-ly-su-co" style="background:var(--green-050)">
-  <div class="wrap">
-    <div class="section-head">
-      <span class="eyebrow">🛠 BƯỚC 1 — Tự làm được ngay</span>
-      <h2 class="section-title">Hướng dẫn từng bước</h2>
-      <p class="section-sub"><b>Dùng khi:</b> bạn cần biết CÁCH LÀM một việc (đăng ký tài khoản, cài ClassIn, vào thi khảo sát…).<br>Đây là phần hướng dẫn — <b>không phải nơi báo lỗi</b>. Làm theo mà vẫn không được thì mới sang Bước 2 để gửi yêu cầu.</p>
-    </div>
-    <div class="faq-jump" id="faqJump"></div>
-    <div class="faq-list" id="faqList"></div>
-  </div>
-</section>
-
-<!-- ================= TÀI LIỆU ================= -->
-<section class="section">
-  <div class="wrap" style="max-width:760px">
-    <div class="section-head">
-      <span class="eyebrow">📖 Học thêm</span>
-      <h2 class="section-title">Tài liệu &amp; kênh bổ trợ</h2>
-      <p class="section-sub">Tài liệu, sổ tay và các kênh livestream bổ trợ kiến thức ngoài giờ học chính.</p>
-    </div>
-    <div class="card doc-list-wrap">
-      <div class="doc-list" id="docList"></div>
-    </div>
   </div>
 </section>
 
@@ -615,26 +653,16 @@
   </div>
 </section>
 
-<!-- ================= CHỌN LỚP + TKB ================= -->
-<section class="section" id="lich-hoc">
-  <div class="wrap">
+<!-- ================= TÀI LIỆU ================= -->
+<section class="section" id="tai-lieu" style="background:var(--green-050)">
+  <div class="wrap" style="max-width:760px">
     <div class="section-head">
-      <span class="eyebrow">🎓 Bạn thuộc lớp nào?</span>
-      <h2 class="section-title">Chọn lớp để xem lịch học & nhóm liên hệ</h2>
+      <span class="eyebrow">📖 Học thêm</span>
+      <h2 class="section-title">Tài liệu &amp; kênh bổ trợ</h2>
+      <p class="section-sub">Tài liệu, sổ tay và các kênh livestream bổ trợ kiến thức ngoài giờ học chính.</p>
     </div>
-    <div class="class-grid" id="classGrid"></div>
-
-    <div class="card card-pad" style="margin-top:24px;">
-      <div class="tkb-head">
-        <h3 id="tkbTitle">Thông tin lớp</h3>
-        <div class="sync-note" id="syncNote" style="margin:0;"><span class="dot" id="syncDot"></span><span id="syncText">Đang tải dữ liệu…</span></div>
-      </div>
-      <div class="tkb-scroll">
-        <table class="tkb" id="tkbTable" style="display:none;"></table>
-      </div>
-      <div class="tkb-empty" id="tkbEmpty" style="display:none;"></div>
-
-      <div class="link-groups" id="classLinkGroups"></div>
+    <div class="card doc-list-wrap">
+      <div class="doc-list" id="docList"></div>
     </div>
   </div>
 </section>
@@ -724,6 +752,7 @@ function savedCourse(){
   try{ const v = localStorage.getItem(KHOA_KEY); return (v && COURSES[v]) ? v : null; }catch(e){ return null; }
 }
 function chonKhoa(key){
+  if(currentCourse !== key) selectedClass = null;   // đổi khóa -> đọc lại lớp đã nhớ của khóa đó
   currentCourse = key;
   try{ localStorage.setItem(KHOA_KEY, key); }catch(e){}
   const url = new URL(location.href);
@@ -793,82 +822,95 @@ function tabConfigured(tab){
 /* Dữ liệu mẫu — chỉ dùng để demo khi CHƯA gắn Google Sheet thật,
    hoặc dùng tạm khi kết nối Sheet bị lỗi. */
 const SAMPLE_DATA = {
+  // Bản sao dữ liệu thật tab Sheet ngày 15/09/2026 — CHỈ dùng khi không tải được Google Sheet
   lop: [
-    {chuong_trinh:"BCA",ma_lop:"BCA01 - 2K9",ten_hien_thi:"Lớp BCA01 - 2K9",mo_ta_ngan:"Khóa Xuất phát sớm ĐGNL Bộ Công An",khai_giang:"17/05/2026",trang_thai:"Đang học",thu_tu:"1",hien_thi:"TRUE"},
-    {chuong_trinh:"BCA",ma_lop:"BCA02 - 2K9",ten_hien_thi:"Lớp BCA02 - 2K9",mo_ta_ngan:"Khóa Xuất phát sớm ĐGNL Bộ Công An",khai_giang:"16/08/2026",trang_thai:"Sắp khai giảng",thu_tu:"2",hien_thi:"TRUE"},
-    {chuong_trinh:"HSA",ma_lop:"TH01 - 2K9",ten_hien_thi:"Lớp TH01.2K9 - Tinh Hoa 01",mo_ta_ngan:"Khóa Xuất phát sớm ĐGNL ĐHQG Hà Nội",khai_giang:"01/04/2026",trang_thai:"Đang học",thu_tu:"1",hien_thi:"TRUE"},
-    {chuong_trinh:"HSA",ma_lop:"NT01 - 2K10",ten_hien_thi:"Lớp NT01.2K10 - Nền Tảng 01",mo_ta_ngan:"Khóa Nền tảng ĐGNL ĐHQG Hà Nội",khai_giang:"15/09/2026",trang_thai:"Sắp khai giảng",thu_tu:"2",hien_thi:"TRUE"},
-    {chuong_trinh:"QDA",ma_lop:"QDA01 - 2K9",ten_hien_thi:"Lớp QDA01.2K9",mo_ta_ngan:"Khóa Xuất phát sớm ĐGNL Bộ Quốc phòng",khai_giang:"01/04/2026",trang_thai:"Đang học",thu_tu:"1",hien_thi:"TRUE"},
-    {chuong_trinh:"QDA",ma_lop:"QDA02 - 2K9",ten_hien_thi:"Lớp QDA02.2K9",mo_ta_ngan:"Khóa Xuất phát sớm ĐGNL Bộ Quốc phòng",khai_giang:"10/06/2026",trang_thai:"Sắp khai giảng",thu_tu:"2",hien_thi:"TRUE"},
+    {"chuong_trinh":"BCA","ma_lop":"BCA01 - 2K9","ten_hien_thi":"Lớp BCA01 - 2K9","mo_ta_ngan":"Khóa Xuất phát sớm ĐGNL Bộ Công An","khai_giang":"17/05/2026","trang_thai":"Đang học","thu_tu":"1","hien_thi":"TRUE"},
+    {"chuong_trinh":"BCA","ma_lop":"BCA02 - 2K9","ten_hien_thi":"Lớp BCA02 - 2K9","mo_ta_ngan":"Khóa Xuất phát sớm ĐGNL Bộ Công An","khai_giang":"16/08/2026","trang_thai":"Đang học","thu_tu":"2","hien_thi":"TRUE"},
+    {"chuong_trinh":"HSA","ma_lop":"TH01 - 2K9","ten_hien_thi":"Lớp TH01.2K9 - Tinh Hoa 01","mo_ta_ngan":"Khóa Xuất phát sớm ĐGNL ĐHQG Hà Nội","khai_giang":"01/04/2026","trang_thai":"Đang học","thu_tu":"1","hien_thi":"TRUE"},
+    {"chuong_trinh":"HSA","ma_lop":"TH02 - 2K9","ten_hien_thi":"Lớp TH02.2K9 - Tinh Hoa 02","mo_ta_ngan":"Khóa Xuất phát sớm ĐGNL ĐHQG Hà Nội","khai_giang":"10/06/2026","trang_thai":"Đang học","thu_tu":"2","hien_thi":"TRUE"},
+    {"chuong_trinh":"HSA","ma_lop":"NT01 - 2K9","ten_hien_thi":"Lớp NT01.2K10 - Nền Tảng 01","mo_ta_ngan":"Khóa Nền tảng ĐGNL ĐHQG Hà Nội","khai_giang":"15/09/2026","trang_thai":"Đang học","thu_tu":"4","hien_thi":"TRUE"},
+    {"chuong_trinh":"HSA","ma_lop":"TH03 -  2K9","ten_hien_thi":"Lớp TH03.2K9 - Tinh Hoa 03","mo_ta_ngan":"Khóa Xuất phát sớm ĐGNL ĐHQG Hà Nội","khai_giang":"","trang_thai":"Đang học","thu_tu":"3","hien_thi":"TRUE"},
+    {"chuong_trinh":"QDA","ma_lop":"QDA01 - 2K9","ten_hien_thi":"Lớp QDA01.2K9","mo_ta_ngan":"Khóa Xuất phát sớm ĐGNL Bộ Quốc phòng","khai_giang":"01/04/2026","trang_thai":"Đang học","thu_tu":"1","hien_thi":"TRUE"},
+    {"chuong_trinh":"QDA","ma_lop":"QDA02 - 2K9","ten_hien_thi":"Lớp QDA02.2K9","mo_ta_ngan":"Khóa Xuất phát sớm ĐGNL Bộ Quốc phòng","khai_giang":"10/06/2026","trang_thai":"Đang học","thu_tu":"2","hien_thi":"TRUE"},
+    {"chuong_trinh":"QDA","ma_lop":"QDA03 - 2K9","ten_hien_thi":"Lớp QDA03.2K9","mo_ta_ngan":"Khóa Xuất phát sớm ĐGNL Bộ Quốc phòng","khai_giang":"","trang_thai":"Đang học","thu_tu":"3","hien_thi":"TRUE"}
   ],
   lopLink: [
-    {ma_lop:"ALL",nhom:"Kích hoạt khóa học",tieu_de:"Trang kích hoạt & học tập (hsavnu.edu.vn)",link:"https://hsavnu.edu.vn",icon:"🔑",thu_tu:"1",hien_thi:"TRUE"},
-    {ma_lop:"BCA01 - 2K9",nhom:"Zalo học sinh",tieu_de:"Nhóm Zalo chính BCA01",link:"",icon:"💬",thu_tu:"1",hien_thi:"TRUE"},
-    {ma_lop:"BCA01 - 2K9",nhom:"Zalo phụ huynh",tieu_de:"Nhóm Zalo phụ huynh BCA01",link:"",icon:"👪",thu_tu:"2",hien_thi:"TRUE"},
-    {ma_lop:"BCA02 - 2K9",nhom:"Zalo học sinh",tieu_de:"Nhóm Zalo chính BCA02",link:"",icon:"💬",thu_tu:"1",hien_thi:"TRUE"},
-    {ma_lop:"TH01 - 2K9",nhom:"Zalo học sinh",tieu_de:"Nhóm Zalo chính TH01",link:"",icon:"💬",thu_tu:"1",hien_thi:"TRUE"},
-    {ma_lop:"NT01 - 2K10",nhom:"Zalo học sinh",tieu_de:"Nhóm Zalo chính NT01",link:"",icon:"💬",thu_tu:"1",hien_thi:"TRUE"},
-    {ma_lop:"QDA01 - 2K9",nhom:"Zalo học sinh",tieu_de:"Nhóm Zalo chính QDA01",link:"",icon:"💬",thu_tu:"1",hien_thi:"TRUE"},
-    {ma_lop:"QDA02 - 2K9",nhom:"Zalo học sinh",tieu_de:"Nhóm Zalo chính QDA02",link:"",icon:"💬",thu_tu:"1",hien_thi:"TRUE"},
+    {"ma_lop":"ALL","nhom":"Kích hoạt khóa học","tieu_de":"Trang kích hoạt & học tập (hsavnu.edu.vn)","link":"https://hsavnu.edu.vn","icon":"🔑","thu_tu":"1","hien_thi":"TRUE"}
   ],
   tkb: [
-    {ma_lop:"__BOQUA__",ca:"(dòng chắn - đừng xoá)",Thu2:"-",Thu3:"-",Thu4:"-",Thu5:"-",Thu6:"-",Thu7:"-",CN:"-",hinh_thuc:"-",ghi_chu:"-",thu_tu:"0"},
-    {ma_lop:"BCA01 - 2K9",ca:"20h00 - 21h30",Thu2:"",Thu3:"Toán Đại\nThầy Thắng",Thu4:"",Thu5:"",Thu6:"",Thu7:"",CN:"",hinh_thuc:"ClassIn",ghi_chu:"",thu_tu:"1"},
-    {ma_lop:"TH01 - 2K9",ca:"20h00 - 21h30",Thu2:"",Thu3:"Toán Đại\nThầy Thắng",Thu4:"",Thu5:"",Thu6:"",Thu7:"",CN:"",hinh_thuc:"ClassIn",ghi_chu:"",thu_tu:"1"},
-    {ma_lop:"QDA01 - 2K9",ca:"20h00 - 21h30",Thu2:"",Thu3:"Toán Đại\nThầy Thắng",Thu4:"",Thu5:"",Thu6:"",Thu7:"",CN:"",hinh_thuc:"ClassIn",ghi_chu:"",thu_tu:"1"},
+    {"ma_lop":"__BOQUA__","ca":"(dòng chắn - đừng xoá)","Thu2":"-","Thu3":"-","Thu4":"-","Thu5":"-","Thu6":"-","Thu7":"-","CN":"-","hinh_thuc":"-","ghi_chu":"-","thu_tu":""},
+    {"ma_lop":"BCA01 - 2K9","ca":"20h00 - 21h30","Thu2":"","Thu3":"","Thu4":"","Thu5":"","Thu6":"Văn\nCô Thoa","Thu7":"","CN":"","hinh_thuc":"ClassIn","ghi_chu":"","thu_tu":"1"},
+    {"ma_lop":"BCA01 - 2K9","ca":"21h35 - 23h05","Thu2":"Tiếng Anh\nThầy Đức","Thu3":"","Thu4":"","Thu5":"Toán Hình\nCô Trinh","Thu6":"Toán Đại\nCô Trang","Thu7":"","CN":"","hinh_thuc":"ClassIn","ghi_chu":"","thu_tu":"2"},
+    {"ma_lop":"BCA02 - 2K9","ca":"20h00 - 21h30","Thu2":"Văn\nCô Thoa","Thu3":"","Thu4":"","Thu5":"","Thu6":"","Thu7":"","CN":"","hinh_thuc":"ClassIn","ghi_chu":"","thu_tu":"1"},
+    {"ma_lop":"BCA02 - 2K9","ca":"21h35 - 23h05","Thu2":"Toán Hình\nCô Trinh","Thu3":"Toán Hình\nCô Trinh","Thu4":"Văn\nCô Thoa","Thu5":"Toán Đại\nCô Trang","Thu6":"Tiếng Anh\nCô Nhật Linh","Thu7":"","CN":"Toán Đại\nCô Trang","hinh_thuc":"ClassIn","ghi_chu":"","thu_tu":"2"},
+    {"ma_lop":"TH01 - 2K9","ca":"20h00 - 21h30","Thu2":"Vật lý\nCô Hải Yến","Thu3":"Sinh Học\nCô Dung","Thu4":"","Thu5":"Lịch Sử\nCô Hiền","Thu6":"Hóa Học\nThầy Văn Bình","Thu7":"","CN":"Địa Lý\nCô Phương","hinh_thuc":"ClassIn","ghi_chu":"","thu_tu":"1"},
+    {"ma_lop":"TH01 - 2K9","ca":"21h35 - 23h05","Thu2":"Văn\nThầy Hải Linh","Thu3":"Tiếng Anh\nThầy Đức","Thu4":"Toán Hình\nCô Trinh","Thu5":"","Thu6":"","Thu7":"Toán Đại\nThầy Thắng","CN":"","hinh_thuc":"ClassIn","ghi_chu":"","thu_tu":"2"},
+    {"ma_lop":"TH02 - 2K9","ca":"20h00 - 21h30","Thu2":"Vật lý\nCô Hải Yến","Thu3":"Sinh Học\nCô Dung","Thu4":"","Thu5":"Lịch Sử\nCô Hiền","Thu6":"Hóa Học\nThầy Văn Bình","Thu7":"","CN":"Địa Lý\nCô Phương","hinh_thuc":"ClassIn","ghi_chu":"","thu_tu":"1"},
+    {"ma_lop":"TH02 - 2K9","ca":"21h35 - 23h05","Thu2":"Văn\nThầy Hải Linh","Thu3":"Tiếng Anh\nThầy Đức","Thu4":"Toán Hình\nCô Trinh","Thu5":"","Thu6":"","Thu7":"Toán Đại\nThầy Thắng","CN":"","hinh_thuc":"ClassIn","ghi_chu":"","thu_tu":"2"},
+    {"ma_lop":"TH03 - 2K9","ca":"20h00 - 21h30","Thu2":"Vật lý\nCô Hải Yến","Thu3":"Sinh Học\nCô Dung","Thu4":"Văn\nThầy Hải Linh","Thu5":"Lịch Sử\nCô Hiền","Thu6":"Hóa Học\nThầy Văn Bình","Thu7":"","CN":"Địa Lý\nCô Phương","hinh_thuc":"ClassIn","ghi_chu":"","thu_tu":"1"},
+    {"ma_lop":"TH03 - 2K9","ca":"21h35 - 23h05","Thu2":"Toán Hình\nCô Trang","Thu3":"Văn\nThầy Hải Linh","Thu4":"Tiếng Anh\nThầy Đức","Thu5":"Toán Đại\nThầy Hoàng Anh","Thu6":"Toán Đại\nThầy Hoàng Anh","Thu7":"Toán Hình\nCô Trang","CN":"Tiếng Anh\nThầy Đức","hinh_thuc":"ClassIn","ghi_chu":"","thu_tu":"2"},
+    {"ma_lop":"QDA01 - 2K9","ca":"20h00 - 21h30","Thu2":"Vật lý\nCô Hải Yến","Thu3":"Sinh Học\nCô Dung","Thu4":"","Thu5":"Lịch Sử\nCô Hiền","Thu6":"Hóa Học\nThầy Văn Bình","Thu7":"","CN":"Địa Lý\nCô Phương","hinh_thuc":"ClassIn","ghi_chu":"","thu_tu":"1"},
+    {"ma_lop":"QDA01 - 2K9","ca":"21h35 - 23h05","Thu2":"Văn\nThầy Hải Linh","Thu3":"Tiếng Anh\nThầy Đức","Thu4":"Toán Hình\nCô Trinh","Thu5":"","Thu6":"","Thu7":"Toán Đại\nThầy Thắng","CN":"","hinh_thuc":"","ghi_chu":"","thu_tu":""},
+    {"ma_lop":"QDA02 - 2K9","ca":"20h00 - 21h30","Thu2":"Vật lý\nCô Hải Yến","Thu3":"Sinh Học\nCô Dung","Thu4":"","Thu5":"Lịch Sử\nCô Hiền","Thu6":"Hóa Học\nThầy Văn Bình","Thu7":"","CN":"Địa Lý\nCô Phương","hinh_thuc":"ClassIn","ghi_chu":"","thu_tu":"1"},
+    {"ma_lop":"QDA02 - 2K9","ca":"21h35 - 23h05","Thu2":"Văn\nThầy Hải Linh","Thu3":"Tiếng Anh\nThầy Đức","Thu4":"Toán Hình\nCô Trinh","Thu5":"","Thu6":"","Thu7":"Toán Đại\nThầy Thắng","CN":"","hinh_thuc":"","ghi_chu":"","thu_tu":""}
   ],
   troGiang: [
-    {ho_ten:"Đinh Thị Phúc",chuc_vu:"Trưởng bộ phận",nhom_loc:"Quản lý chung",sdt:"0943114865",zalo_link:"",nhiem_vu:"Quản lý chung hoạt động vận hành lớp học.\nTiếp nhận phản ánh về chất lượng nhân sự và hoạt động lớp.\nHỗ trợ kiểm tra, theo dõi tình hình học tập của học sinh.",thu_tu:"1",hien_thi:"TRUE"},
-    {ho_ten:"Nguyễn Phúc Thanh",chuc_vu:"Lead Team",nhom_loc:"Website & Tài khoản",sdt:"0384409051",zalo_link:"",nhiem_vu:"Hỗ trợ website: mã kích hoạt, tài khoản, mật khẩu.\nSắp xếp thời khóa biểu các lớp.\nTổng hợp báo cáo tình hình hoạt động lớp học.",thu_tu:"2",hien_thi:"TRUE"},
-    {ho_ten:"Hoàng Tiến Minh",chuc_vu:"Quản lý lớp",nhom_loc:"Lớp học & Hỗ trợ",sdt:"0936685333",zalo_link:"",nhiem_vu:"Quản lý và hỗ trợ hoạt động lớp học.\nGiải đáp các thắc mắc chung trong nhóm hỏi đáp.\nHỗ trợ kiểm tra và cung cấp tài liệu học tập.\nMở lớp ClassIn và hỗ trợ học sinh trong suốt buổi học.",thu_tu:"3",hien_thi:"TRUE"},
-    {ho_ten:"Nguyễn Viết Quân",chuc_vu:"Quản lý nhập học",nhom_loc:"Nhập học & SBD",sdt:"0974187313",zalo_link:"",nhiem_vu:"Xác nhận và hỗ trợ gửi email nhập học sau khi đăng ký.\nCấp lại SBD, mã kích hoạt khi có sai sót trong email nhập học.\nHỗ trợ cập nhật SĐT Zalo, email, địa chỉ và thông tin cá nhân sau đăng ký.",thu_tu:"4",hien_thi:"TRUE"},
-    {ho_ten:"Đặng Ngọc Công",chuc_vu:"Hỗ trợ ID sách",nhom_loc:"Sách & Vận chuyển",sdt:"0363539005",zalo_link:"",nhiem_vu:"Hỗ trợ ID và mã kích hoạt sách trên website.",thu_tu:"5",hien_thi:"TRUE"},
-    {ho_ten:"Lê Văn Trì",chuc_vu:"Hỗ trợ vận chuyển sách",nhom_loc:"Sách & Vận chuyển",sdt:"0334642345",zalo_link:"",nhiem_vu:"Hỗ trợ cập nhật SĐT, địa chỉ nhận sách, mã vận đơn.\nHỗ trợ thay đổi thông tin nhận sách sau khi lên đơn.\nTiếp nhận và xử lý các vấn đề liên quan đến đơn hàng vận chuyển sách.",thu_tu:"6",hien_thi:"TRUE"},
+    {"ho_ten":"Đinh Thị Phúc","chuc_vu":"Trưởng bộ phận","nhom_loc":"Quản lý chung","sdt":"0943114865","zalo_link":"","nhiem_vu":"Quản lý chung hoạt động vận hành lớp học.\nTiếp nhận phản ánh về chất lượng nhân sự và hoạt động lớp.\nHỗ trợ kiểm tra, theo dõi tình hình học tập của học sinh.","thu_tu":"1","hien_thi":"TRUE"},
+    {"ho_ten":"Nguyễn Phúc Thanh","chuc_vu":"Lead Team","nhom_loc":"Website & Tài khoản","sdt":"0384409051","zalo_link":"","nhiem_vu":"Hỗ trợ website: mã kích hoạt, tài khoản, mật khẩu.\nSắp xếp thời khóa biểu các lớp.\nTổng hợp báo cáo tình hình hoạt động lớp học.","thu_tu":"2","hien_thi":"TRUE"},
+    {"ho_ten":"Hoàng Tiến Minh","chuc_vu":"Quản lý lớp","nhom_loc":"Lớp học & Hỗ trợ","sdt":"0936685333","zalo_link":"","nhiem_vu":"Quản lý và hỗ trợ hoạt động lớp học.\nGiải đáp các thắc mắc chung trong nhóm hỏi đáp.\nHỗ trợ kiểm tra và cung cấp tài liệu học tập.\nMở lớp ClassIn và hỗ trợ học sinh trong suốt buổi học.","thu_tu":"3","hien_thi":"TRUE"},
+    {"ho_ten":"Nguyễn Viết Quân","chuc_vu":"Quản lý nhập học","nhom_loc":"Nhập học & SBD","sdt":"0974187313","zalo_link":"","nhiem_vu":"Xác nhận và hỗ trợ gửi email nhập học sau khi đăng ký.\nCấp lại SBD, mã kích hoạt khi có sai sót trong email nhập học.\nHỗ trợ cập nhật SĐT Zalo, email, địa chỉ và thông tin cá nhân sau đăng ký.","thu_tu":"4","hien_thi":"TRUE"},
+    {"ho_ten":"Đặng Ngọc Công","chuc_vu":"Hỗ trợ ID sách","nhom_loc":"Sách & Vận chuyển","sdt":"0363539005","zalo_link":"","nhiem_vu":"Hỗ trợ ID và mã kích hoạt sách trên website.","thu_tu":"5","hien_thi":"TRUE"},
+    {"ho_ten":"Lê Văn Trì","chuc_vu":"Hỗ trợ vận chuyển sách","nhom_loc":"Sách & Vận chuyển","sdt":"0334642345","zalo_link":"","nhiem_vu":"Hỗ trợ cập nhật SĐT, địa chỉ nhận sách, mã vận đơn.\nHỗ trợ thay đổi thông tin nhận sách sau khi lên đơn.\nTiếp nhận và xử lý các vấn đề liên quan đến đơn hàng vận chuyển sách.","thu_tu":"6","hien_thi":"TRUE"}
   ],
   video: [
-    {tieu_de:"Hướng dẫn đăng ký & kích hoạt tài khoản Website",mo_ta:"Các bước tạo tài khoản, kích hoạt mã và chọn đúng lớp trên hsavnu.edu.vn",video_url:"https://youtu.be/seDYwEzYVbw",thu_tu:"1",hien_thi:"TRUE"},
+    {"tieu_de":"Hướng dẫn đăng ký & kích hoạt tài khoản Website","mo_ta":"Các bước tạo tài khoản, kích hoạt mã và chọn đúng lớp trên hsavnu.edu.vn","video_url":"https://youtu.be/seDYwEzYVbw","thu_tu":"1","hien_thi":"TRUE"}
   ],
   taiLieu: [
-    {tieu_de:"Fanpage HSA Education",mo_ta:"Thông báo chung, lịch livestream bổ trợ kiến thức",link:"https://www.facebook.com/hsaeducation.com.vn",thu_tu:"1",hien_thi:"TRUE"},
-    {tieu_de:"Group kín livestream",mo_ta:"Xem livestream bổ trợ; bản ghi lại được lưu trên Website",link:"https://www.facebook.com/groups/1509555213899255",thu_tu:"2",hien_thi:"TRUE"},
-    {tieu_de:"Tiktok HSA Education",mo_ta:"Mẹo làm bài và kiến thức ngắn theo từng chuyên đề",link:"https://www.tiktok.com/@hsa.education.official",thu_tu:"3",hien_thi:"TRUE"},
+    {"tieu_de":"Fanpage HSA Education","mo_ta":"Thông báo chung, lịch livestream bổ trợ kiến thức","link":"https://www.facebook.com/hsaeducation.com.vn","thu_tu":"1","hien_thi":"TRUE"},
+    {"tieu_de":"Group kín livestream","mo_ta":"Xem livestream bổ trợ; bản ghi lại được lưu trên Website","link":"https://www.facebook.com/groups/1509555213899255","thu_tu":"2","hien_thi":"TRUE"},
+    {"tieu_de":"Tiktok HSA Education","mo_ta":"Mẹo làm bài và kiến thức ngắn theo từng chuyên đề","link":"https://www.tiktok.com/@hsa.education.official","thu_tu":"3","hien_thi":"TRUE"}
   ],
   hoTro: [
-    {muc_id:"1",muc_tieu_de:"ĐĂNG KÝ & KÍCH HOẠT TÀI KHOẢN WEBSITE",muc_mau:"xanh_duong",thu_tu:"1",dong_loai:"buoc",icon:"",noi_dung:"Bước 1. Truy cập hsavnu.edu.vn và tạo tài khoản bằng email của bạn.",link:"",hien_thi:"TRUE"},
-    {muc_id:"1",muc_tieu_de:"ĐĂNG KÝ & KÍCH HOẠT TÀI KHOẢN WEBSITE",muc_mau:"xanh_duong",thu_tu:"2",dong_loai:"buoc",icon:"",noi_dung:"Bước 2. Mở email đã đăng ký để lấy mã kích hoạt. Nếu không thấy, kiểm tra kỹ mục Spam và Quảng cáo (Promotions).",link:"",hien_thi:"TRUE"},
-    {muc_id:"1",muc_tieu_de:"ĐĂNG KÝ & KÍCH HOẠT TÀI KHOẢN WEBSITE",muc_mau:"xanh_duong",thu_tu:"3",dong_loai:"buoc",icon:"",noi_dung:"Bước 3. Vào mục Khóa học → chọn đúng lớp đã đăng ký → mở 1 buổi học bất kỳ → dán mã kích hoạt vào.",link:"",hien_thi:"TRUE"},
-    {muc_id:"1",muc_tieu_de:"ĐĂNG KÝ & KÍCH HOẠT TÀI KHOẢN WEBSITE",muc_mau:"xanh_duong",thu_tu:"4",dong_loai:"luu_y",icon:"",noi_dung:"📌 Mã kích hoạt chỉ nhập 1 LẦN DUY NHẤT. Những lần sau chỉ cần đăng nhập là học được ngay.",link:"",hien_thi:"TRUE"},
-    {muc_id:"2",muc_tieu_de:"CÀI CLASSIN & VÀO LỚP HỌC",muc_mau:"cam",thu_tu:"1",dong_loai:"buoc",icon:"",noi_dung:"Bước 1. Tải và cài phần mềm ClassIn về máy tính hoặc điện thoại.",link:"",hien_thi:"TRUE"},
-    {muc_id:"2",muc_tieu_de:"CÀI CLASSIN & VÀO LỚP HỌC",muc_mau:"cam",thu_tu:"2",dong_loai:"link",icon:"📌",noi_dung:"Hướng dẫn tạo tài khoản ClassIn (có ảnh từng bước)",link:"https://docs.google.com/document/d/1awsiDb2t1PfJ2EY3NwaC8vgFS9ESdGKG_zZ4wwtnv-Y/edit?tab=t.0",hien_thi:"TRUE"},
-    {muc_id:"2",muc_tieu_de:"CÀI CLASSIN & VÀO LỚP HỌC",muc_mau:"cam",thu_tu:"3",dong_loai:"buoc",icon:"",noi_dung:"Bước 2. Tạo tài khoản ClassIn bằng ĐÚNG email đã đăng ký khóa học.",link:"",hien_thi:"TRUE"},
-    {muc_id:"2",muc_tieu_de:"CÀI CLASSIN & VÀO LỚP HỌC",muc_mau:"cam",thu_tu:"4",dong_loai:"buoc",icon:"",noi_dung:"Bước 3. Chờ Quản lý lớp thêm bạn vào lớp — mất khoảng 24–48 giờ.",link:"",hien_thi:"TRUE"},
-    {muc_id:"2",muc_tieu_de:"CÀI CLASSIN & VÀO LỚP HỌC",muc_mau:"cam",thu_tu:"5",dong_loai:"luu_y",icon:"",noi_dung:"⏰ Quá 48 giờ chưa thấy lớp, HOẶC muốn đổi email ClassIn → sang mục Gửi yêu cầu hỗ trợ để báo.",link:"",hien_thi:"TRUE"},
-    {muc_id:"3",muc_tieu_de:"LÀM BÀI THI KHẢO SÁT HÀNG THÁNG",muc_mau:"xanh_la",thu_tu:"1",dong_loai:"buoc",icon:"",noi_dung:"Bước 1. Đăng nhập tài khoản trên website hsavnu.edu.vn.",link:"",hien_thi:"TRUE"},
-    {muc_id:"3",muc_tieu_de:"LÀM BÀI THI KHẢO SÁT HÀNG THÁNG",muc_mau:"xanh_la",thu_tu:"2",dong_loai:"buoc",icon:"",noi_dung:"Bước 2. Vào mục Khóa học → chọn đúng lớp bạn đang học.",link:"",hien_thi:"TRUE"},
-    {muc_id:"3",muc_tieu_de:"LÀM BÀI THI KHẢO SÁT HÀNG THÁNG",muc_mau:"xanh_la",thu_tu:"3",dong_loai:"buoc",icon:"",noi_dung:"Bước 3. Cuộn xuống cuối trang, tìm mục ĐỀ THI KHẢO SÁT HÀNG THÁNG rồi chọn bài thi.",link:"",hien_thi:"TRUE"},
-    {muc_id:"3",muc_tieu_de:"LÀM BÀI THI KHẢO SÁT HÀNG THÁNG",muc_mau:"xanh_la",thu_tu:"4",dong_loai:"luu_y",icon:"",noi_dung:"⚠️ Bài thi tự nộp hoặc tự nhảy phần là do lệch múi giờ. Chỉnh thiết bị về Hà Nội/Bangkok (GMT+7) rồi thi lại.",link:"",hien_thi:"TRUE"},
-    {muc_id:"4",muc_tieu_de:"XEM LẠI BÀI GIẢNG & LẤY TÀI LIỆU",muc_mau:"tim",thu_tu:"1",dong_loai:"buoc",icon:"",noi_dung:"Bước 1. Đăng nhập hsavnu.edu.vn → vào mục Khóa học → chọn lớp của bạn.",link:"",hien_thi:"TRUE"},
-    {muc_id:"4",muc_tieu_de:"XEM LẠI BÀI GIẢNG & LẤY TÀI LIỆU",muc_mau:"tim",thu_tu:"2",dong_loai:"buoc",icon:"",noi_dung:"Bước 2. Chọn đúng buổi học cần xem lại — video record và tài liệu nằm ngay trong buổi học đó.",link:"",hien_thi:"TRUE"},
-    {muc_id:"4",muc_tieu_de:"XEM LẠI BÀI GIẢNG & LẤY TÀI LIỆU",muc_mau:"tim",thu_tu:"3",dong_loai:"luu_y",icon:"",noi_dung:"📌 Video và tài liệu cập nhật liên tục sau mỗi buổi. Buổi vừa học chưa thấy video thì chờ thêm ít giờ rồi tải lại trang.",link:"",hien_thi:"TRUE"},
+    {"muc_id":"1","muc_tieu_de":"ĐĂNG KÝ & KÍCH HOẠT TÀI KHOẢN WEBSITE","muc_mau":"xanh_duong","thu_tu":"1","dong_loai":"buoc","icon":"","noi_dung":"Bước 1. Truy cập hsavnu.edu.vn và tạo tài khoản bằng email của bạn.","link":"","hien_thi":"TRUE"},
+    {"muc_id":"1","muc_tieu_de":"ĐĂNG KÝ & KÍCH HOẠT TÀI KHOẢN WEBSITE","muc_mau":"xanh_duong","thu_tu":"2","dong_loai":"buoc","icon":"","noi_dung":"Bước 2. Mở email đã đăng ký để lấy mã kích hoạt. Nếu không thấy, kiểm tra kỹ mục Spam và Quảng cáo (Promotions).","link":"","hien_thi":"TRUE"},
+    {"muc_id":"1","muc_tieu_de":"ĐĂNG KÝ & KÍCH HOẠT TÀI KHOẢN WEBSITE","muc_mau":"xanh_duong","thu_tu":"3","dong_loai":"buoc","icon":"","noi_dung":"Bước 3. Vào mục Khóa học → chọn đúng lớp đã đăng ký → mở 1 buổi học bất kỳ → dán mã kích hoạt vào.","link":"","hien_thi":"TRUE"},
+    {"muc_id":"1","muc_tieu_de":"ĐĂNG KÝ & KÍCH HOẠT TÀI KHOẢN WEBSITE","muc_mau":"xanh_duong","thu_tu":"4","dong_loai":"luu_y","icon":"","noi_dung":"📌 Mã kích hoạt chỉ nhập 1 LẦN DUY NHẤT. Những lần sau chỉ cần đăng nhập là học được ngay.","link":"","hien_thi":"TRUE"},
+    {"muc_id":"2","muc_tieu_de":"CÀI CLASSIN & VÀO LỚP HỌC","muc_mau":"cam","thu_tu":"1","dong_loai":"buoc","icon":"","noi_dung":"Bước 1. Tải và cài phần mềm ClassIn về máy tính hoặc điện thoại.","link":"","hien_thi":"TRUE"},
+    {"muc_id":"2","muc_tieu_de":"CÀI CLASSIN & VÀO LỚP HỌC","muc_mau":"cam","thu_tu":"2","dong_loai":"link","icon":"📌","noi_dung":"Hướng dẫn tạo tài khoản ClassIn (có ảnh từng bước)","link":"https://docs.google.com/document/d/1awsiDb2t1PfJ2EY3NwaC8vgFS9ESdGKG_zZ4wwtnv-Y/edit?tab=t.0","hien_thi":"TRUE"},
+    {"muc_id":"2","muc_tieu_de":"CÀI CLASSIN & VÀO LỚP HỌC","muc_mau":"cam","thu_tu":"3","dong_loai":"buoc","icon":"","noi_dung":"Bước 2. Tạo tài khoản ClassIn bằng ĐÚNG email đã đăng ký khóa học.","link":"","hien_thi":"TRUE"},
+    {"muc_id":"2","muc_tieu_de":"CÀI CLASSIN & VÀO LỚP HỌC","muc_mau":"cam","thu_tu":"4","dong_loai":"buoc","icon":"","noi_dung":"Bước 3. Chờ Quản lý lớp thêm bạn vào lớp — mất khoảng 24–48 giờ.","link":"","hien_thi":"TRUE"},
+    {"muc_id":"2","muc_tieu_de":"CÀI CLASSIN & VÀO LỚP HỌC","muc_mau":"cam","thu_tu":"5","dong_loai":"luu_y","icon":"","noi_dung":"⏰ Quá 48 giờ chưa thấy lớp, HOẶC muốn đổi email ClassIn → sang mục Gửi yêu cầu hỗ trợ để báo.","link":"","hien_thi":"TRUE"},
+    {"muc_id":"3","muc_tieu_de":"LÀM BÀI THI KHẢO SÁT HÀNG THÁNG","muc_mau":"xanh_la","thu_tu":"1","dong_loai":"buoc","icon":"","noi_dung":"Bước 1. Đăng nhập tài khoản trên website hsavnu.edu.vn.","link":"","hien_thi":"TRUE"},
+    {"muc_id":"3","muc_tieu_de":"LÀM BÀI THI KHẢO SÁT HÀNG THÁNG","muc_mau":"xanh_la","thu_tu":"2","dong_loai":"buoc","icon":"","noi_dung":"Bước 2. Vào mục Khóa học → chọn đúng lớp bạn đang học.","link":"","hien_thi":"TRUE"},
+    {"muc_id":"3","muc_tieu_de":"LÀM BÀI THI KHẢO SÁT HÀNG THÁNG","muc_mau":"xanh_la","thu_tu":"3","dong_loai":"buoc","icon":"","noi_dung":"Bước 3. Cuộn xuống cuối trang, tìm mục ĐỀ THI KHẢO SÁT HÀNG THÁNG rồi chọn bài thi.","link":"","hien_thi":"TRUE"},
+    {"muc_id":"3","muc_tieu_de":"LÀM BÀI THI KHẢO SÁT HÀNG THÁNG","muc_mau":"xanh_la","thu_tu":"4","dong_loai":"luu_y","icon":"","noi_dung":"⚠️ Bài thi tự nộp hoặc tự nhảy phần là do lệch múi giờ. Chỉnh thiết bị về Hà Nội/Bangkok (GMT+7) rồi thi lại.","link":"","hien_thi":"TRUE"},
+    {"muc_id":"4","muc_tieu_de":"XEM LẠI BÀI GIẢNG & LẤY TÀI LIỆU","muc_mau":"tim","thu_tu":"1","dong_loai":"buoc","icon":"","noi_dung":"Bước 1. Đăng nhập hsavnu.edu.vn → vào mục Khóa học → chọn lớp của bạn.","link":"","hien_thi":"TRUE"},
+    {"muc_id":"4","muc_tieu_de":"XEM LẠI BÀI GIẢNG & LẤY TÀI LIỆU","muc_mau":"tim","thu_tu":"2","dong_loai":"buoc","icon":"","noi_dung":"Bước 2. Chọn đúng buổi học cần xem lại — video record và tài liệu nằm ngay trong buổi học đó.","link":"","hien_thi":"TRUE"},
+    {"muc_id":"4","muc_tieu_de":"XEM LẠI BÀI GIẢNG & LẤY TÀI LIỆU","muc_mau":"tim","thu_tu":"3","dong_loai":"luu_y","icon":"","noi_dung":"📌 Video và tài liệu cập nhật liên tục sau mỗi buổi. Buổi vừa học chưa thấy video thì chờ thêm ít giờ rồi tải lại trang.","link":"","hien_thi":"TRUE"}
   ],
   quyTac: [
-    {nhom:"Nguyên tắc học trên ClassIn",mo_ta_nhom:"Để đảm bảo buổi học hiệu quả và nghiêm túc, học sinh cần tuân thủ các quy định sau",loai:"quy_dinh",noi_dung:"Bật camera, trang phục lịch sự, ngồi ngay ngắn.",thu_tu:"1",hien_thi:"TRUE"},
-    {nhom:"Nguyên tắc học trên ClassIn",mo_ta_nhom:"",loai:"quy_dinh",noi_dung:"Tham gia lớp đúng giờ, chuẩn bị bài trước buổi học.",thu_tu:"2",hien_thi:"TRUE"},
-    {nhom:"Nguyên tắc học trên ClassIn",mo_ta_nhom:"",loai:"quy_dinh",noi_dung:"Không bật mic tự do — chỉ mở mic khi có sự cho phép của giáo viên và quản lý lớp.",thu_tu:"3",hien_thi:"TRUE"},
-    {nhom:"Nguyên tắc học trên ClassIn",mo_ta_nhom:"",loai:"quy_dinh",noi_dung:"Trao đổi qua khung chat — mọi câu hỏi, thắc mắc sẽ được trợ giảng và giáo viên hỗ trợ qua chat.",thu_tu:"4",hien_thi:"TRUE"},
-    {nhom:"Nguyên tắc học trên ClassIn",mo_ta_nhom:"",loai:"quy_dinh",noi_dung:"Tuyệt đối không chat linh tinh, đùa cợt.",thu_tu:"5",hien_thi:"TRUE"},
-    {nhom:"Nguyên tắc học trên ClassIn",mo_ta_nhom:"",loai:"vi_pham",noi_dung:"Cảnh báo",thu_tu:"6",hien_thi:"TRUE"},
-    {nhom:"Nguyên tắc học trên ClassIn",mo_ta_nhom:"",loai:"vi_pham",noi_dung:"Kick khỏi lớp học",thu_tu:"7",hien_thi:"TRUE"},
-    {nhom:"Nguyên tắc học trên ClassIn",mo_ta_nhom:"",loai:"vi_pham",noi_dung:"Khóa tài khoản 1 tháng",thu_tu:"8",hien_thi:"TRUE"},
-    {nhom:"Nguyên tắc học trên ClassIn",mo_ta_nhom:"",loai:"nhan_manh",noi_dung:"ĐẶC BIỆT: Hãy là người học văn minh — có trách nhiệm — tôn trọng lớp học!",thu_tu:"9",hien_thi:"TRUE"},
+    {"nhom":"Nguyên tắc học trên ClassIn","mo_ta_nhom":"Để đảm bảo buổi học hiệu quả và nghiêm túc, học sinh cần tuân thủ các quy định sau","loai":"quy_dinh","noi_dung":"Bật camera, trang phục lịch sự, ngồi ngay ngắn.","thu_tu":"1","hien_thi":"TRUE"},
+    {"nhom":"Nguyên tắc học trên ClassIn","mo_ta_nhom":"","loai":"quy_dinh","noi_dung":"Tham gia lớp đúng giờ, chuẩn bị bài trước buổi học.","thu_tu":"2","hien_thi":"TRUE"},
+    {"nhom":"Nguyên tắc học trên ClassIn","mo_ta_nhom":"","loai":"quy_dinh","noi_dung":"Không bật mic tự do — chỉ mở mic khi có sự cho phép của giáo viên và quản lý lớp.","thu_tu":"3","hien_thi":"TRUE"},
+    {"nhom":"Nguyên tắc học trên ClassIn","mo_ta_nhom":"","loai":"quy_dinh","noi_dung":"Trao đổi qua khung chat — mọi câu hỏi, thắc mắc sẽ được trợ giảng và giáo viên hỗ trợ qua chat.","thu_tu":"4","hien_thi":"TRUE"},
+    {"nhom":"Nguyên tắc học trên ClassIn","mo_ta_nhom":"","loai":"quy_dinh","noi_dung":"Tuyệt đối không chat linh tinh, đùa cợt.","thu_tu":"5","hien_thi":"TRUE"},
+    {"nhom":"Nguyên tắc học trên ClassIn","mo_ta_nhom":"","loai":"vi_pham","noi_dung":"Cảnh báo","thu_tu":"6","hien_thi":"TRUE"},
+    {"nhom":"Nguyên tắc học trên ClassIn","mo_ta_nhom":"","loai":"vi_pham","noi_dung":"Kick khỏi lớp học","thu_tu":"7","hien_thi":"TRUE"},
+    {"nhom":"Nguyên tắc học trên ClassIn","mo_ta_nhom":"","loai":"vi_pham","noi_dung":"Khóa tài khoản 1 tháng","thu_tu":"8","hien_thi":"TRUE"},
+    {"nhom":"Nguyên tắc học trên ClassIn","mo_ta_nhom":"","loai":"nhan_manh","noi_dung":"ĐẶC BIỆT: Hãy là người học văn minh — có trách nhiệm — tôn trọng lớp học!","thu_tu":"9","hien_thi":"TRUE"}
   ],
   form: [
-    {nhom:"Tài khoản Website",tieu_de:"Tài khoản bị khóa",mo_ta:"Đăng nhập quá 3 thiết bị/trình duyệt cùng lúc sẽ bị khóa tự động.",icon:"🔒",link_form:"https://forms.gle/vJCUSJSS7u1S8ECm9",link_tra_cuu:"https://script.google.com/macros/s/AKfycbxFn-JCbjBEDaUcvsJs-xyXJ2hjViCgoHKwLgxMWapSukjoztyzbII3_oZZO2TOaz2seg/exec",nguoi_xu_ly:"Nguyễn Phúc Thanh",thoi_gian_xu_ly:"T2 · T4 · T6 · CN, khoảng 22:00",dung_link_rieng:"TRUE",thu_tu:"1",hien_thi:"TRUE"},
-    {nhom:"Tài khoản Website",tieu_de:"Quên mật khẩu / không đăng nhập được",mo_ta:"Không truy cập được tài khoản trên hsavnu.edu.vn.",icon:"🔑",link_form:"",link_tra_cuu:"",nguoi_xu_ly:"Nguyễn Phúc Thanh",thoi_gian_xu_ly:"Trong giờ hành chính",dung_link_rieng:"",thu_tu:"2",hien_thi:"TRUE"},
-    {nhom:"Nhập học & SBD",tieu_de:"Sai SBD / sai thông tin nhập học",mo_ta:"Thông tin trong email nhập học bị sai, cần cấp lại.",icon:"🆔",link_form:"",link_tra_cuu:"",nguoi_xu_ly:"Nguyễn Viết Quân",thoi_gian_xu_ly:"Trong giờ hành chính",dung_link_rieng:"",thu_tu:"3",hien_thi:"TRUE"},
-    {nhom:"ClassIn",tieu_de:"Chưa được thêm vào lớp ClassIn",mo_ta:"Đã tạo tài khoản ClassIn nhưng quá 48h chưa thấy lớp.",icon:"🏫",link_form:"",link_tra_cuu:"",nguoi_xu_ly:"Hoàng Tiến Minh",thoi_gian_xu_ly:"Xử lý trong 24–48h",dung_link_rieng:"",thu_tu:"4",hien_thi:"TRUE"},
-    {nhom:"Sách & Vận chuyển",tieu_de:"Chưa nhận được sách / tra mã vận đơn",mo_ta:"Kiểm tra tình trạng đơn hàng sách.",icon:"📦",link_form:"",link_tra_cuu:"",nguoi_xu_ly:"Lê Văn Trì",thoi_gian_xu_ly:"Trong giờ hành chính",dung_link_rieng:"",thu_tu:"5",hien_thi:"TRUE"},
-    {nhom:"Học tập",tieu_de:"Hỏi bài / thắc mắc kiến thức",mo_ta:"Câu hỏi về bài tập hoặc nội dung chưa hiểu trên lớp.",icon:"💬",link_form:"https://docs.google.com/document/d/1IV5q8sAoQu3KEeh-C8eDVyc8rlN8bRESPwaE6MJxpiA/edit?tab=t.0",link_tra_cuu:"",nguoi_xu_ly:"Hoàng Tiến Minh",thoi_gian_xu_ly:"Trong ngày",dung_link_rieng:"TRUE",thu_tu:"6",hien_thi:"TRUE"},
+    {"nhom":"Tài khoản Website","tieu_de":"Tài khoản bị khóa","mo_ta":"Đăng nhập quá 3 thiết bị/trình duyệt cùng lúc sẽ bị khóa tự động.","icon":"🔒","link_form":"https://script.google.com/macros/s/AKfycbxFn-JCbjBEDaUcvsJs-xyXJ2hjViCgoHKwLgxMWapSukjoztyzbII3_oZZO2TOaz2seg/exec?trang=form","link_tra_cuu":"https://script.google.com/macros/s/AKfycbxFn-JCbjBEDaUcvsJs-xyXJ2hjViCgoHKwLgxMWapSukjoztyzbII3_oZZO2TOaz2seg/exec","nguoi_xu_ly":"Nguyễn Phúc Thanh","thoi_gian_xu_ly":"T2 · T4 · T6 · CN, khoảng 22:00","dung_link_rieng":"TRUE","thu_tu":"1","hien_thi":"TRUE","can_anh":""},
+    {"nhom":"Tài khoản Website","tieu_de":"Quên mật khẩu / không đăng nhập được","mo_ta":"Không truy cập được tài khoản trên hsavnu.edu.vn.","icon":"🔑","link_form":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=form&van_de=Qu%C3%AAn%20m%E1%BA%ADt%20kh%E1%BA%A9u%20%2F%20kh%C3%B4ng%20%C4%91%C4%83ng%20nh%E1%BA%ADp%20%C4%91%C6%B0%E1%BB%A3c","link_tra_cuu":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=tracuu","nguoi_xu_ly":"Nguyễn Phúc Thanh","thoi_gian_xu_ly":"Trong giờ hành chính","dung_link_rieng":"","thu_tu":"2","hien_thi":"TRUE","can_anh":""},
+    {"nhom":"Tài khoản Website","tieu_de":"Chưa nhận được mã kích hoạt","mo_ta":"Đã đăng ký nhưng chưa có mã để kích hoạt khóa học.","icon":"🎫","link_form":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=form&van_de=Ch%C6%B0a%20nh%E1%BA%ADn%20%C4%91%C6%B0%E1%BB%A3c%20m%C3%A3%20k%C3%ADch%20ho%E1%BA%A1t","link_tra_cuu":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=tracuu","nguoi_xu_ly":"Nguyễn Phúc Thanh","thoi_gian_xu_ly":"Trong giờ hành chính","dung_link_rieng":"","thu_tu":"3","hien_thi":"TRUE","can_anh":""},
+    {"nhom":"Nhập học & SBD","tieu_de":"Sai SBD / sai thông tin nhập học","mo_ta":"Thông tin trong email nhập học bị sai, cần cấp lại.","icon":"🆔","link_form":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=form&van_de=Sai%20SBD%20%2F%20sai%20th%C3%B4ng%20tin%20nh%E1%BA%ADp%20h%E1%BB%8Dc","link_tra_cuu":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=tracuu","nguoi_xu_ly":"Nguyễn Viết Quân","thoi_gian_xu_ly":"Trong giờ hành chính","dung_link_rieng":"","thu_tu":"4","hien_thi":"TRUE","can_anh":""},
+    {"nhom":"Nhập học & SBD","tieu_de":"Chưa nhận được email nhập học","mo_ta":"Đã đăng ký nhưng chưa thấy email (kiểm tra kỹ mục Spam/Quảng cáo trước).","icon":"📧","link_form":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=form&van_de=Ch%C6%B0a%20nh%E1%BA%ADn%20%C4%91%C6%B0%E1%BB%A3c%20email%20nh%E1%BA%ADp%20h%E1%BB%8Dc","link_tra_cuu":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=tracuu","nguoi_xu_ly":"Nguyễn Viết Quân","thoi_gian_xu_ly":"Chờ 1–3 giờ rồi báo","dung_link_rieng":"","thu_tu":"5","hien_thi":"TRUE","can_anh":""},
+    {"nhom":"Nhập học & SBD","tieu_de":"Đổi SĐT Zalo / email / địa chỉ","mo_ta":"Cập nhật thông tin cá nhân sau khi đã đăng ký.","icon":"✏️","link_form":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=form&van_de=%C4%90%E1%BB%95i%20S%C4%90T%20Zalo%20%2F%20email%20%2F%20%C4%91%E1%BB%8Ba%20ch%E1%BB%89","link_tra_cuu":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=tracuu","nguoi_xu_ly":"Nguyễn Viết Quân","thoi_gian_xu_ly":"Trong giờ hành chính","dung_link_rieng":"","thu_tu":"6","hien_thi":"TRUE","can_anh":""},
+    {"nhom":"ClassIn","tieu_de":"Chưa được thêm vào lớp ClassIn","mo_ta":"Đã tạo tài khoản ClassIn nhưng quá 48h chưa thấy lớp.","icon":"🏫","link_form":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=form&van_de=Ch%C6%B0a%20%C4%91%C6%B0%E1%BB%A3c%20th%C3%AAm%20v%C3%A0o%20l%E1%BB%9Bp%20ClassIn","link_tra_cuu":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=tracuu","nguoi_xu_ly":"Hoàng Tiến Minh","thoi_gian_xu_ly":"Xử lý trong 24–48h","dung_link_rieng":"","thu_tu":"7","hien_thi":"TRUE","can_anh":"TRUE"},
+    {"nhom":"ClassIn","tieu_de":"Đổi email ClassIn","mo_ta":"Không còn dùng được email cũ đã đăng ký ClassIn.","icon":"📮","link_form":"https://forms.gle/sdfutL4Wgr2Uqpk4A","link_tra_cuu":"","nguoi_xu_ly":"Hoàng Tiến Minh","thoi_gian_xu_ly":"Xử lý theo đợt","dung_link_rieng":"TRUE","thu_tu":"8","hien_thi":"TRUE","can_anh":""},
+    {"nhom":"Sách & Vận chuyển","tieu_de":"Chưa nhận được sách / tra mã vận đơn","mo_ta":"Kiểm tra tình trạng đơn hàng sách.","icon":"📦","link_form":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=form&van_de=Ch%C6%B0a%20nh%E1%BA%ADn%20%C4%91%C6%B0%E1%BB%A3c%20s%C3%A1ch%20%2F%20tra%20m%C3%A3%20v%E1%BA%ADn%20%C4%91%C6%A1n","link_tra_cuu":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=tracuu","nguoi_xu_ly":"Lê Văn Trì","thoi_gian_xu_ly":"Trong giờ hành chính","dung_link_rieng":"","thu_tu":"9","hien_thi":"TRUE","can_anh":""},
+    {"nhom":"Sách & Vận chuyển","tieu_de":"Lỗi ID / mã kích hoạt sách","mo_ta":"Không kích hoạt được sách trên website.","icon":"📕","link_form":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=form&van_de=L%E1%BB%97i%20ID%20%2F%20m%C3%A3%20k%C3%ADch%20ho%E1%BA%A1t%20s%C3%A1ch","link_tra_cuu":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=tracuu","nguoi_xu_ly":"Đặng Ngọc Công","thoi_gian_xu_ly":"Trong giờ hành chính","dung_link_rieng":"","thu_tu":"10","hien_thi":"TRUE","can_anh":""},
+    {"nhom":"Học tập","tieu_de":"Hỏi bài / thắc mắc kiến thức","mo_ta":"Câu hỏi về bài tập hoặc nội dung chưa hiểu trên lớp.","icon":"💬","link_form":"https://docs.google.com/document/d/1IV5q8sAoQu3KEeh-C8eDVyc8rlN8bRESPwaE6MJxpiA/edit?tab=t.0","link_tra_cuu":"","nguoi_xu_ly":"Hoàng Tiến Minh","thoi_gian_xu_ly":"Trong ngày","dung_link_rieng":"TRUE","thu_tu":"11","hien_thi":"TRUE","can_anh":""}
   ],
 };
 
@@ -912,6 +954,8 @@ function hasLink(v){ return !!(v && String(v).trim() && String(v).trim()!=="#");
 function appendChuongTrinh(url){
   const entryId = CONFIG.FORM_CHUONGTRINH_ENTRY;
   if(!entryId || String(entryId).indexOf('DAN_ENTRY_ID')===0) return url;
+  // Mã entry này chỉ thuộc Google Form chung cũ (đã ngừng nhận) — không gắn vào link khác
+  if(String(url).indexOf('1FAIpQLSfSqe45') < 0) return url;
   const khoa = (COURSES[currentCourse] || COURSES.bca).code;
   const sep = url.indexOf('?')>-1 ? '&' : '?';
   return `${url}${sep}entry.${entryId}=${encodeURIComponent(khoa)}`;
@@ -920,6 +964,7 @@ function appendChuongTrinh(url){
    (dạng .../macros/s/<mã>/exec — hệ thống khóa tài khoản, hệ thống hỗ trợ chung).
    Khi đó tự gắn ?trang=form|tracuu&khoa=BCA|HSA|QDA (giữ nguyên tham số khác như van_de).
    Link loại khác (Google Form, Google Doc...) vẫn mở tab mới như cũ. */
+function laLinkForm(url){ return /\/macros\/s\/|forms\.gle\/|docs\.google\.com\/forms\//.test(String(url||'')); }
 function laLinkRieng(f){ return String(f.dung_link_rieng||'').trim().toUpperCase()==='TRUE'; }
 function laWebAppNhung(f, url){ return /\/macros\/s\/[^\/?#]+\/exec/.test(String(url||'')); }
 function ganThamSo(url, trang){
@@ -976,11 +1021,29 @@ function toYoutubeEmbed(url){
   }catch(e){ return raw; }
 }
 
+/* Đổi bảng CSV (mảng các dòng) thành danh sách đối tượng theo hàng tiêu đề.
+   KHÔNG dùng chế độ header:true của PapaParse: bản 5.4.1 làm MẤT DÒNG DỮ LIỆU ĐẦU TIÊN
+   khi hàng tiêu đề có nhiều ô trống (Google trả về các cột trống thừa bên phải) —
+   đây mới là nguyên nhân thật của lỗi "Google nuốt dòng đầu" (đã từng làm mất lớp BCA01).
+   Cột có tiêu đề trống bị bỏ qua; dòng trống hoàn toàn bị bỏ qua. */
+function csvThanhDoiTuong(rows){
+  if(!rows || !rows.length) return [];
+  const hdr = rows[0].map(h=>String(h==null?'':h).trim());
+  const out = [];
+  for(let i=1;i<rows.length;i++){
+    const r = rows[i] || [];
+    if(!r.some(v=>String(v==null?'':v).trim()!=='')) continue;
+    const o = {};
+    hdr.forEach((h,j)=>{ if(h && !(h in o)) o[h] = r[j]==null ? '' : String(r[j]); });
+    out.push(o);
+  }
+  return out;
+}
 function fetchTabOnce(tab){
   return new Promise((resolve)=>{
     Papa.parse(sheetCsvUrl(tab), {
-      download:true, header:true, skipEmptyLines:true,
-      complete: (res)=> resolve({ok:true, data: res.data || []}),
+      download:true, header:false, skipEmptyLines:true,
+      complete: (res)=> resolve({ok:true, data: csvThanhDoiTuong(res.data)}),
       error: ()=> resolve({ok:false, data: null})
     });
   });
@@ -1110,6 +1173,8 @@ function renderFaq(){
   mucs.forEach((m,i)=> { m.thu_tu = i+1; m.rows.sort(sortByThuTu); });
 
   jumpEl.innerHTML = mucs.map(m=>`<a href="#faq-muc-${m.id}">${m.thu_tu}. ${m.tieu_de}</a>`).join('');
+  // máy tính: mở sẵn mọi hướng dẫn · điện thoại: thu gọn để trang ngắn, bấm tiêu đề để mở
+  const moSan = !(window.matchMedia && window.matchMedia('(max-width: 700px)').matches);
 
   listEl.innerHTML = mucs.map(m=>{
     const color = `var(--c-${m.mau||'xanh_duong'})`;
@@ -1125,23 +1190,35 @@ function renderFaq(){
       return `<a class="faq-link ${ok?'':'disabled'}" href="${ok?r.link:'#'}" target="_blank" rel="noopener">${r.icon||'🔗'} ${r.noi_dung||''}</a>`;
     }).join('');
     return `
-      <div class="faq-card" id="faq-muc-${m.id}">
-        <div class="faq-head" style="background:${color}">
+      <details class="faq-card" id="faq-muc-${m.id}"${moSan?' open':''}>
+        <summary class="faq-head" style="background:${color}">
           <div class="faq-num">${m.thu_tu}</div>
           <h4>${m.tieu_de}</h4>
-        </div>
+        </summary>
         <div class="faq-body">${body}</div>
-      </div>`;
+      </details>`;
   }).join('');
+  // bấm nút mục lục -> mở đúng hướng dẫn đó (trên điện thoại các mục đang thu gọn)
+  jumpEl.querySelectorAll('a').forEach(a=>{
+    a.addEventListener('click', ()=>{ const d = document.querySelector(a.getAttribute('href')); if(d) d.open = true; });
+  });
 }
 
 /* ---------- TÀI LIỆU ---------- */
+function iconTaiLieu(link){
+  const l = String(link||'');
+  if(/facebook\.com\/groups/.test(l)) return '👥';
+  if(/facebook\.com/.test(l)) return '📘';
+  if(/tiktok\.com/.test(l)) return '🎵';
+  if(/youtu/.test(l)) return '▶️';
+  return '📄';
+}
 function renderDocs(){
   const list = document.getElementById('docList');
   if(!DATA.taiLieu.length){ list.innerHTML = `<div class="tkb-empty">Chưa có tài liệu nào.</div>`; return; }
   list.innerHTML = DATA.taiLieu.map((d,i)=>`
     <a class="doc-row" href="${d.link||'#'}" target="_blank" rel="noopener" style="${i>0?'border-top:1px solid var(--border)':''}">
-      <div class="doc-icon">📄</div>
+      <div class="doc-icon">${d.icon || iconTaiLieu(d.link)}</div>
       <div class="doc-text"><h4>${d.tieu_de||''}</h4><p>${d.mo_ta||''}</p></div>
       <div class="doc-arrow">→</div>
     </a>`).join('');
@@ -1180,6 +1257,7 @@ function renderTeam(){
     grid.innerHTML = `<div class="tkb-empty form-empty">Chưa có ai trong nhóm này.</div>`;
     return;
   }
+  const moSanViec = !(window.matchMedia && window.matchMedia('(max-width: 700px)').matches);
   grid.innerHTML = rows.map(t=>{
     const duties = splitDuties(t.nhiem_vu);
     const tel = (t.sdt||'').replace(/\s/g,'');
@@ -1194,7 +1272,7 @@ function renderTeam(){
           ${t.nhom_loc?`<span class="staff-tag">${t.nhom_loc}</span>`:''}
         </div>
       </div>
-      ${duties.length?`<ul class="staff-duties">${duties.map(d=>`<li>${d}</li>`).join('')}</ul>`:''}
+      ${duties.length?`<details class="staff-more"${moSanViec?' open':''}><summary>Phần việc phụ trách (${duties.length})</summary><ul class="staff-duties">${duties.map(d=>`<li>${d}</li>`).join('')}</ul></details>`:''}
       <div class="staff-actions">
         ${tel?`<a class="staff-btn primary" href="tel:${tel}">📞 ${t.sdt}</a>`:''}
         ${zalo?`<a class="staff-btn" href="${zalo}" target="_blank" rel="noopener">💬 Nhắn Zalo</a>`:''}
@@ -1315,9 +1393,9 @@ function renderForms(){
       </div>
       <div class="issue-actions">
         <a class="issue-btn ${okForm?'':'disabled'}" href="${formUrl}" target="_blank" rel="noopener"${nhungForm?' data-nhung="1"'+tieuDeAttr:''} data-loai="form">
-          ${okForm?'📮 Gửi yêu cầu':'Đang cập nhật form'}
+          ${!okForm?'Đang cập nhật form':(laLinkForm(f.link_form)?'📮 Gửi yêu cầu':'📄 Mở trang')}
         </a>
-        ${okTra?`<a class="issue-btn ghost" href="${traUrl}" target="_blank" rel="noopener"${nhungTra?' data-nhung="1"'+tieuDeAttr:''} data-loai="tracuu">🔍 Tra cứu kết quả</a>`:''}
+        ${okTra?`<a class="issue-btn ghost" href="${traUrl}" target="_blank" rel="noopener"${nhungTra?' data-nhung="1"'+tieuDeAttr:''} data-loai="tracuu">🔍 Tra cứu<span class="an-dt"> kết quả</span></a>`:''}
       </div>
     </div>`;
   }).join('');
@@ -1332,6 +1410,16 @@ function renderForms(){
 }
 
 /* ---------- CHỌN LỚP ---------- */
+/* Nhớ lớp học sinh đã chọn (theo từng khóa) để lần sau mở web thấy ngay lịch của lớp mình.
+   Link ?lop=BCA01 cũng chọn sẵn lớp (để QLL gửi link riêng cho từng nhóm Zalo). */
+function khoaLuuLop(){ return 'hsa_lop_da_chon_' + (currentCourse||''); }
+function docLopDaChon(){
+  try{ const q = new URLSearchParams(location.search).get('lop'); if(q){ const k = classKey(q);
+    const hit = DATA.lop.find(l=>classKey(l.ma_lop)===k) || DATA.lop.find(l=>classKey(l.ma_lop).indexOf(k)===0);
+    if(hit) return classKey(hit.ma_lop); } }catch(e){}
+  try{ return localStorage.getItem(khoaLuuLop()) || null; }catch(e){ return null; }
+}
+function ghiLopDaChon(k){ try{ localStorage.setItem(khoaLuuLop(), k); }catch(e){} }
 function renderClassPicker(){
   const grid = document.getElementById('classGrid');
   if(!DATA.lop.length){
@@ -1340,6 +1428,7 @@ function renderClassPicker(){
     document.getElementById('tkbEmpty').textContent = 'Chưa có lớp học nào.';
     return;
   }
+  if(!selectedClass){ selectedClass = docLopDaChon(); }
   if(!selectedClass || !DATA.lop.find(l=>classKey(l.ma_lop)===selectedClass)){ selectedClass = classKey(DATA.lop[0].ma_lop); }
   grid.innerHTML = DATA.lop.map(l=>`
     <button class="class-pick ${classKey(l.ma_lop)===selectedClass?'selected':''}" data-lop="${classKey(l.ma_lop)}">
@@ -1349,7 +1438,7 @@ function renderClassPicker(){
       <div class="status"><span class="pill ${l.trang_thai==='Đang học'?'':'orange'}">${l.trang_thai||''}</span></div>
     </button>`).join('');
   grid.querySelectorAll('.class-pick').forEach(btn=>{
-    btn.onclick = ()=>{ selectedClass = btn.dataset.lop; renderClassPicker(); renderClassDetail(); };
+    btn.onclick = ()=>{ selectedClass = btn.dataset.lop; ghiLopDaChon(selectedClass); renderClassPicker(); };
   });
 
   document.getElementById('statLop').textContent = DATA.lop.length;
@@ -1373,6 +1462,8 @@ function renderClassDetail(){
   const table = document.getElementById('tkbTable');
   const empty = document.getElementById('tkbEmpty');
   const today = todayThuValue();
+  const hint = document.querySelector('.tkb-hint');
+  if(hint) hint.classList.toggle('an', !rows.length);
 
   if(!rows.length){
     table.style.display='none';
