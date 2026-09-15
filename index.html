@@ -1194,11 +1194,13 @@ async function loadAll(){
     // 2 tab mới: chưa tạo thì coi như trống (không báo lỗi), HoiDap dùng danh sách mẫu "Sắp mở"
     DATA.troGiang = lamSach(troGiang.ok ? troGiang.data : []).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
     DATA.hoiDap   = lamSach(hoiDap.ok ? hoiDap.data : SAMPLE_DATA.hoiDap).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
-    DATA.video    = pick(video, SAMPLE_DATA.video).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
-    DATA.taiLieu  = pick(taiLieu, SAMPLE_DATA.taiLieu).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
-    DATA.hoTro    = pick(hoTro, SAMPLE_DATA.hoTro).filter(r=>truthy(r.hien_thi));
-    DATA.quyTac   = pick(quyTac, SAMPLE_DATA.quyTac).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
-    DATA.form     = pick(form, SAMPLE_DATA.form).filter(r=>truthy(r.hien_thi)).sort(sortByThuTu);
+    // cột khoa (tùy chọn) ở các tab dùng chung: trống / ALL = mọi khóa; "BCA", "BCA, HSA"... = chỉ khóa đó
+    const dungKhoa = r=>truthy(r.hien_thi) && hopKhoa(r.khoa);
+    DATA.video    = pick(video, SAMPLE_DATA.video).filter(dungKhoa).sort(sortByThuTu);
+    DATA.taiLieu  = pick(taiLieu, SAMPLE_DATA.taiLieu).filter(dungKhoa).sort(sortByThuTu);
+    DATA.hoTro    = pick(hoTro, SAMPLE_DATA.hoTro).filter(dungKhoa);
+    DATA.quyTac   = pick(quyTac, SAMPLE_DATA.quyTac).filter(dungKhoa).sort(sortByThuTu);
+    DATA.form     = pick(form, SAMPLE_DATA.form).filter(dungKhoa).sort(sortByThuTu);
 
     cleanMaLop(DATA.lop); cleanMaLop(DATA.lopLink); cleanMaLop(DATA.tkb);
     DATA.lop = locLop(boDongChan(DATA.lop));
@@ -1334,6 +1336,22 @@ function hopKhoa(v){
   const ds = String(v||'').toUpperCase().split(/[,;\/]/).map(x=>x.trim()).filter(Boolean);
   const ma = (COURSES[currentCourse] || COURSES.bca).code;
   return !ds.length || ds.includes('ALL') || ds.includes('TẤT CẢ') || ds.includes(ma);
+}
+/* Cột nguoi_xu_ly (tab Form): 1 tên = mọi khóa; hoặc "BCA: Minh; HSA, QDA: Quân" (thêm "ALL: tên" làm mặc định).
+   Cùng quy tắc với hệ thống gửi yêu cầu hỗ trợ (Apps Script). */
+function phuTrachTheoKhoa(v){
+  const ma = (COURSES[currentCourse] || COURSES.bca).code;
+  const boDau = x => String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'D').toUpperCase().replace(/\s+/g,' ').trim();
+  const map = {}, macDinh = [];
+  String(v||'').split(/\s*[;\n]\s*/).forEach(phan=>{
+    phan = phan.trim(); if(!phan) return;
+    const m = phan.match(/^([^:=]{2,40})\s*[:=]\s*(.+)$/);
+    const ks = m ? m[1].split(/[,\/&]/).map(boDau) : [];
+    const hopLe = ks.length && ks.every(k=>k==='ALL' || k==='TAT CA' || COURSES[k.toLowerCase()]);
+    if(!hopLe){ macDinh.push(phan); return; }
+    ks.forEach(k=>{ if(k==='ALL' || k==='TAT CA') macDinh.push(m[2].trim()); else map[k] = m[2].trim(); });
+  });
+  return map[ma] || macDinh.join(', ');
 }
 function renderHoiDap(){
   const grid = document.getElementById('qaGrid');
@@ -1496,7 +1514,7 @@ function renderForms(){
 
   if(formSearchQuery){
     rows = rows.filter(f=>{
-      const hay = [f.tieu_de, f.mo_ta, f.nhom, f.nguoi_xu_ly].join(' ').toLowerCase();
+      const hay = [f.tieu_de, f.mo_ta, f.nhom, phuTrachTheoKhoa(f.nguoi_xu_ly)].join(' ').toLowerCase();
       return hay.includes(formSearchQuery);
     });
   }
@@ -1525,7 +1543,7 @@ function renderForms(){
       </div>
       ${f.mo_ta?`<div class="issue-desc">${f.mo_ta}</div>`:''}
       <div class="issue-meta">
-        ${f.nguoi_xu_ly?`<span>👤 Phụ trách: <b>${f.nguoi_xu_ly}</b></span>`:''}
+        ${phuTrachTheoKhoa(f.nguoi_xu_ly)?`<span>👤 Phụ trách: <b>${phuTrachTheoKhoa(f.nguoi_xu_ly)}</b></span>`:''}
         ${f.thoi_gian_xu_ly?`<span>⏱ Xử lý: <b>${f.thoi_gian_xu_ly}</b></span>`:''}
       </div>
       <div class="issue-actions">
