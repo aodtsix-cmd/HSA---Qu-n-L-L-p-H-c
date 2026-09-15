@@ -900,7 +900,7 @@ const SAMPLE_DATA = {
     {"nhom":"Nguyên tắc học trên ClassIn","mo_ta_nhom":"","loai":"nhan_manh","noi_dung":"ĐẶC BIỆT: Hãy là người học văn minh — có trách nhiệm — tôn trọng lớp học!","thu_tu":"9","hien_thi":"TRUE"}
   ],
   form: [
-    {"nhom":"Tài khoản Website","tieu_de":"Tài khoản bị khóa","mo_ta":"Đăng nhập quá 3 thiết bị/trình duyệt cùng lúc sẽ bị khóa tự động.","icon":"🔒","link_form":"https://script.google.com/macros/s/AKfycbxFn-JCbjBEDaUcvsJs-xyXJ2hjViCgoHKwLgxMWapSukjoztyzbII3_oZZO2TOaz2seg/exec?trang=form","link_tra_cuu":"https://script.google.com/macros/s/AKfycbxFn-JCbjBEDaUcvsJs-xyXJ2hjViCgoHKwLgxMWapSukjoztyzbII3_oZZO2TOaz2seg/exec","nguoi_xu_ly":"Nguyễn Phúc Thanh","thoi_gian_xu_ly":"T2 · T4 · T6 · CN, khoảng 22:00","dung_link_rieng":"TRUE","thu_tu":"1","hien_thi":"TRUE","can_anh":""},
+    {"nhom":"Tài khoản Website","tieu_de":"Tài khoản bị khóa","mo_ta":"Đăng nhập quá 3 thiết bị/trình duyệt cùng lúc sẽ bị khóa tự động.","icon":"🔒","link_form":"https://script.google.com/macros/s/AKfycbxFn-JCbjBEDaUcvsJs-xyXJ2hjViCgoHKwLgxMWapSukjoztyzbII3_oZZO2TOaz2seg/exec?trang=form","link_tra_cuu":"https://script.google.com/macros/s/AKfycbxFn-JCbjBEDaUcvsJs-xyXJ2hjViCgoHKwLgxMWapSukjoztyzbII3_oZZO2TOaz2seg/exec","nguoi_xu_ly":"Nguyễn Phúc Thanh","thoi_gian_xu_ly":"T2 · T4 · T6, khoảng 22:00","dung_link_rieng":"TRUE","thu_tu":"1","hien_thi":"TRUE","can_anh":""},
     {"nhom":"Tài khoản Website","tieu_de":"Quên mật khẩu / không đăng nhập được","mo_ta":"Không truy cập được tài khoản trên hsavnu.edu.vn.","icon":"🔑","link_form":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=form&van_de=Qu%C3%AAn%20m%E1%BA%ADt%20kh%E1%BA%A9u%20%2F%20kh%C3%B4ng%20%C4%91%C4%83ng%20nh%E1%BA%ADp%20%C4%91%C6%B0%E1%BB%A3c","link_tra_cuu":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=tracuu","nguoi_xu_ly":"Nguyễn Phúc Thanh","thoi_gian_xu_ly":"Trong giờ hành chính","dung_link_rieng":"","thu_tu":"2","hien_thi":"TRUE","can_anh":""},
     {"nhom":"Tài khoản Website","tieu_de":"Chưa nhận được mã kích hoạt","mo_ta":"Đã đăng ký nhưng chưa có mã để kích hoạt khóa học.","icon":"🎫","link_form":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=form&van_de=Ch%C6%B0a%20nh%E1%BA%ADn%20%C4%91%C6%B0%E1%BB%A3c%20m%C3%A3%20k%C3%ADch%20ho%E1%BA%A1t","link_tra_cuu":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=tracuu","nguoi_xu_ly":"Nguyễn Phúc Thanh","thoi_gian_xu_ly":"Trong giờ hành chính","dung_link_rieng":"","thu_tu":"3","hien_thi":"TRUE","can_anh":""},
     {"nhom":"Nhập học & SBD","tieu_de":"Sai SBD / sai thông tin nhập học","mo_ta":"Thông tin trong email nhập học bị sai, cần cấp lại.","icon":"🆔","link_form":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=form&van_de=Sai%20SBD%20%2F%20sai%20th%C3%B4ng%20tin%20nh%E1%BA%ADp%20h%E1%BB%8Dc","link_tra_cuu":"https://script.google.com/macros/s/AKfycbzdRd6oRz5rCJ2Un5dIX2dfBzFm3qkXPdVqjevmednLXlOhHXI3-_nlrr0xkjI7L1PN/exec?trang=tracuu","nguoi_xu_ly":"Nguyễn Viết Quân","thoi_gian_xu_ly":"Trong giờ hành chính","dung_link_rieng":"","thu_tu":"4","hien_thi":"TRUE","can_anh":""},
@@ -917,10 +917,27 @@ const SAMPLE_DATA = {
 /* ================================================================
    TIỆN ÍCH
 ================================================================= */
+/* Cột hien_thi: CHỈ ẩn khi ghi rõ FALSE / 0 / ẨN / KHÔNG / NO.
+   Ô để trống = vẫn hiện (người mới thêm dòng hay quên điền cột này). */
 function truthy(v){
   if(v===undefined||v===null) return true;
-  const s = String(v).trim().toUpperCase();
-  return !(s==="FALSE"||s==="0"||s==="AN"||s==="ẨN"||s==="");
+  const s = String(v).trim().toUpperCase().normalize('NFC');
+  return !(s==="FALSE"||s==="0"||s==="AN"||s==="ẨN"||s==="KHONG"||s==="KHÔNG"||s==="NO"||s==="N");
+}
+/* Làm sạch dữ liệu đọc từ Sheet trước khi đưa lên trang:
+   - Chữ thường: đổi < > thành ký tự hiển thị (gõ "<gấp>" vẫn hiện đúng, không bị coi là mã HTML)
+   - Cột link/url: chỉ nhận http(s), tel, mailto, zalo, # — chặn javascript:/data:; mã hóa " < > */
+function lamSachGiaTri(k, v){
+  let t = v==null ? '' : String(v);
+  if(/link|url/i.test(k)){
+    t = t.trim();
+    if(t && !/^(https?:|tel:|mailto:|zalo:|#|\/)/i.test(t)) return '';
+    return t.replace(/"/g,'%22').replace(/</g,'%3C').replace(/>/g,'%3E');
+  }
+  return t.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function lamSach(rows){
+  return (rows||[]).map(r=>{ const o={}; Object.keys(r||{}).forEach(k=>{ o[k]=lamSachGiaTri(k, r[k]); }); return o; });
 }
 /* Chuẩn hoá mã lớp: cắt khoảng trắng thừa + xoá ký tự vô hình (zero-width, BOM...)
    để một dấu cách/ký tự ẩn gõ nhầm trong Sheet không làm rớt cả dòng khỏi kết quả so khớp. */
@@ -1083,7 +1100,7 @@ async function loadAll(){
     // dùng dữ liệu mẫu khi: chưa cấu hình Sheet, HOẶC tải thật sự lỗi.
     // Nếu tải THÀNH CÔNG nhưng tab đang trống (VD TaiLieu chưa ai điền) thì hiển thị
     // đúng trạng thái RỖNG THẬT, không âm thầm thay bằng dữ liệu mẫu giả.
-    function pick(res, sampleArr){ return res.ok ? res.data : sampleArr; }
+    function pick(res, sampleArr){ return lamSach(res.ok ? res.data : sampleArr); }
     const khoaHienTai = (COURSES[currentCourse] || COURSES.bca).code;
     DATA.lop      = pick(lop, SAMPLE_DATA.lop)
                       .filter(r=>truthy(r.hien_thi))
@@ -1456,7 +1473,7 @@ function todayThuValue(){ const map = {0:8,1:2,2:3,3:4,4:5,5:6,6:7}; return map[
 
 function renderClassDetail(){
   const classObj = DATA.lop.find(l=>classKey(l.ma_lop)===selectedClass);
-  document.getElementById('tkbTitle').textContent = classObj ? `Thông tin ${classObj.ten_hien_thi}` : 'Thông tin lớp';
+  document.getElementById('tkbTitle').innerHTML = classObj ? `Thông tin ${classObj.ten_hien_thi}` : 'Thông tin lớp';   // dữ liệu đã được làm sạch
 
   const rows = DATA.tkb.filter(r=>classKey(r.ma_lop)===selectedClass).sort(sortByThuTu);
   const table = document.getElementById('tkbTable');
