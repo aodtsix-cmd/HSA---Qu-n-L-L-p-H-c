@@ -916,13 +916,12 @@ function appendChuongTrinh(url){
   const sep = url.indexOf('?')>-1 ? '&' : '?';
   return `${url}${sep}entry.${entryId}=${encodeURIComponent(khoa)}`;
 }
-/* Mở NGAY TRÊN WEB (cửa sổ nhúng) khi mục báo lỗi có dung_link_rieng = TRUE VÀ link là
-   1 Web App Apps Script (dạng .../macros/s/<mã>/exec — VD hệ thống khóa tài khoản).
-   Khi đó tự gắn ?trang=form|tracuu&khoa=BCA|HSA|QDA.
-   Link loại khác (Google Form, Google Doc...) vẫn mở tab mới như cũ, kể cả khi
-   dung_link_rieng = TRUE (VD mục "Hỏi bài" đang dùng cột này với nghĩa "link riêng"). */
+/* Mở NGAY TRÊN WEB (cửa sổ nhúng) khi link là 1 Web App Apps Script của trung tâm
+   (dạng .../macros/s/<mã>/exec — hệ thống khóa tài khoản, hệ thống hỗ trợ chung).
+   Khi đó tự gắn ?trang=form|tracuu&khoa=BCA|HSA|QDA (giữ nguyên tham số khác như van_de).
+   Link loại khác (Google Form, Google Doc...) vẫn mở tab mới như cũ. */
 function laLinkRieng(f){ return String(f.dung_link_rieng||'').trim().toUpperCase()==='TRUE'; }
-function laWebAppNhung(f, url){ return laLinkRieng(f) && /\/macros\/s\/[^\/?#]+\/exec/.test(String(url||'')); }
+function laWebAppNhung(f, url){ return /\/macros\/s\/[^\/?#]+\/exec/.test(String(url||'')); }
 function ganThamSo(url, trang){
   try{
     const u = new URL(String(url).trim());
